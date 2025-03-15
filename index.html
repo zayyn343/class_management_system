@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+        }
+        .container-login {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h4 {
+            color: #333;
+            font-size: 18px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        input, select, textarea {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background: #f9f9f9;
+            transition: 0.3s;
+            box-sizing: border-box;
+            display: block;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            background: #fff;
+        }
+        .btn-success {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: calc(100% - 24px);
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-success:hover {
+            background: #0056b3;
+        }
+
+        #studentDashboard, #adminDashboard, #teacherDashboard {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: auto;
+            background-color: white;
+        }
+
+        header {
+            background: #007bff;
+            color: #fff;
+            padding: 17px;
+            text-align: center;
+        }
+        nav {
+            background: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 14px 22px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            text-align: center;
+            margin: 10px;
+            min-width: 160px;
+        }
+        button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .dashboard {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: auto;
+            background-color: white;
+        }
+
+        .sidebar {
+            background: #333;
+            color: white;
+            padding: 20px;
+            width: 250px;
+            position: absolute;
+            height: 120%;
+            overflow: auto;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            text-align: left;
+            padding: 12px;
+            margin: 5px 0;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .present {
+            color: green;
+            font-weight: bold;
+        }
+
+        .absent {
+            color: red;
+            font-weight: bold;
+        }
+
+        #attendanceStatus {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .form-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .student-filter {
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="container">
+        <div class="container-login" id="loginPage">
+            <h1 class="h4 text-gray-900 mb-4">Login</h1>
+            <form class="user" id="loginForm">
+                <div class="form-group">
+                    <select required name="userType" class="form-group mb-3">
+                        <option value="">Select User Roles</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="ClassTeacher">Class Teacher</option>
+                        <option value="Student">Student</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-group" required name="username" id="username" placeholder="Enter Email Address">
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" required class="form-group" id="password" placeholder="Enter Password">
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-success btn-block" value="Login" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboards -->
+    <div id="studentDashboard" class="dashboard">
+        <header>
+            <h1>Student Dashboard</h1>
+        </header>
+        <div class="sidebar">
+            <ul>
+                <li><button onclick="showSection('schedule')">Class Schedule</button></li>
+                <li><button onclick="showSection('assignments')">Assignments</button></li>
+                <li><button onclick="showSection('attendance')">Attendance</button></li>
+                <li><button onclick="showSection('leave')">Apply for Leave</button></li>
+                <li><button onclick="logout()">Logout</button></li>
+            </ul>
+        </div>
+        <div class="content">
+            <div id="schedule" class="section" style="display: none;">
+                <h2>Class Schedule</h2>
+                <ul id="classList"></ul>
+            </div>
+            <div id="assignments" class="section" style="display: none;">
+                <h2>Assignments</h2>
+                <form id="assignmentForm">
+                    <label for="assignment">Upload Assignment:</label>
+                    <input type="file" id="assignment" required>
+                    <button type="submit">Submit</button>
+                </form>
+                <p id="uploadStatus"></p>
+            </div>
+            <div id="attendance" class="section" style="display: none;">
+                <h2>Mark Attendance</h2>
+                <p>You must mark your attendance before 10:00 AM to be considered present.</p>
+                <p id="attendanceStatus"></p>
+                <button id="markAttendance">Mark Attendance</button>
+                <div id="attendanceTableContainer" style="display: none;">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="leave" class="section" style="display: none;">
+                <h2>Apply for Leave</h2>
+                <form id="leaveForm">
+                    <label for="leaveReason">Reason for Leave:</label>
+                    <input type="text" id="leaveReason" required>
+                    <label for="leaveDate">Date:</label>
+                    <input type="date" id="leaveDate" required>
+                    <button type="submit">Submit Leave Request</button>
+                </form>
+                <p id="leaveStatus"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminDashboard" class="dashboard">
+        <header>
+            <h1>Admin Dashboard</h1>
+        </header>
+        <div class="dashboard-container" style="display: flex;">
+            <div class="sidebar">
+                <ul>
+                    <li><button onclick="showAdminSection('userManagement')">User  Management</button></li>
+                    <li><button onclick="showAdminSection('adminAttendance')">Attendance Tracking</button></li>
+                    <li><button onclick="showAdminSection('meetings')">Meeting Management</button></li>
+                    <li><button onclick="showAdminSection('lectures')">Recorded Lectures</button></li>
+                    <li><button onclick="showAdminSection('assignments')">Assignment Tracking</button></li>
+                    <li><button onclick="showAdminSection('notifications')">Notifications</button></li>
+                    <li><button onclick="showAdminSection('courses')">Course Management</button></li>
+                    <li><button onclick="logout()">Logout</button></li>
+                </ul>
+            </div>
+            <div class="content" style="flex: 1; padding: 20px; margin-left: 20px; height: 100vh; overflow-y: auto;">
+                <div id="userManagement" class="admin-section" style="display: none;">
+                    <h2>User Management</h2>
+                    <div class="button-group">
+                        <button>Add User</button>
+                        <button>Remove User</button>
+                        <button>View Users</button>
+                    </div>
+                </div>
+                <div id="adminAttendance" class="admin-section" style="display: none;">
+                    <h2>Attendance Tracking & Reporting</h2>
+                    <div class="button-group">
+                        <button>View Attendance Reports</button>
+                        <button>Export Attendance Data</button>
+                    </div>
+                </div>
+                <div id="meetings" class="admin-section" style="display: none;">
+                    <h2>Meeting Management</h2>
+                    <div class="button-group">
+                        <button>Monitor Active Classes</button>
+                        <button>End Meeting</button>
+                    </div>
+                </div>
+                <div id="lectures" class="admin-section" style="display: none;">
+                    <h2>Recorded Lecture Management</h2>
+                    <div class="button-group">
+                        <button>Uploaded Lecture</button>
+                        <button>Delete Old Recordings</button>
+                    </div>
+                </div>
+                <div id="assignments" class="admin-section" style="display: none;">
+                    <h2>Assignment Tracking</h2>
+                    <div class="button-group">
+                        <button>View Submissions</button>
+                        <button>Check Performance Analytics</button>
+                    </div>
+                </div>
+                <div id="notifications" class="admin-section" style="display: none;">
+                    <h2>Notifications & Announcements</h2>
+                    <div class="button-group">
+                        <button>Send System-Wide Notification</button>
+                        <button>Manage Alerts</button>
+                    </div>
+                </div>
+                <div id="courses" class="admin-section" style="display: none;">
+                    <h2>Course & Syllabus Management</h2>
+                    <div class="button-group">
+                        <button>Add Course</button>
+                        <button>Update Syllabus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="teacherDashboard" class="dashboard">
+        <header>
+            <h1>Teacher Dashboard</h1>
+        </header>
+        <div class="sidebar">
+            <ul>
+                <li><button onclick="showSection('attendance')">Attendance Management</button></li>
+                <li><button onclick="showSection('meetings')">Meeting Link Generation</button></li>
+                <li><button onclick="showSection('lectures')">Lecture Uploads</button></li>
+                <li><button onclick="showSection('assignments')">Assignment Management</button></li>
+                <li><button onclick="showSection('notifications')">Notifications & Announcements</button></li>
+                <li><button onclick="logout()">Logout</button></li>
+            </ul>
+        </div>
+        <div class="content">
+            <div id="attendance" class="section" style="display: none;">
+                <h2>Attendance Management</h2>
+                <div class="student-filter">
+                    <label for="attendanceDate">Filter by Date:</label>
+                    <input type="date" id="attendanceDate">
+                    <button id="filterAttendance">Filter</button>
+                    <button id="reviewAllAttendance">View All Records</button>
+                </div>
+                <div id="teacherAttendanceTableContainer">
+                    <table id="teacherAttendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Date</th>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherAttendanceBody"></tbody>
+                    </table>
+                    <div id="noAttendanceData" class="empty-message" style="display: none;">
+                        No attendance records found. Students may not have marked their attendance yet.
+                    </div>
+                </div>
+            </div>
+            <div id="meetings" class="section" style="display: none;">
+                <h2>Meeting Link Generation</h2>
+                <p>Create a new meeting link for your virtual class sessions.</p>
+                <div class="form-container" style="max-width: 500px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
+                    <h3>Meeting Link Generator</h3>
+                    <div class="form-group">
+                        <label for="meetingTitle">Meeting Title:</label>
+                        <input type="text" id="meetingTitle" placeholder="Enter meeting title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingDate">Date:</label>
+                        <input type="date" id="meetingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingTime">Time:</label>
+                        <input type="time" id="meetingTime" required>
+                    </div>
+                    <button onclick="generateMeetingLink()" class="btn-success">Generate Meeting Link</button>
+                </div>
+                <div id="meetingLinkResult" class="meeting-link-result" style="display: none; margin-top: 20px;">
+                    <h3>Your Meeting Link</h3>
+                    <p>Your meeting link has been generated:</p>
+                    <div id="generatedLink" class="generated-link" style="font-weight: bold; color: #007bff;"></div>
+                    <button onclick="copyMeetingLink()" class="btn-success">Copy Link</button>
+                    <button onclick="joinMeeting()" class="btn-success">Join Now</button>
+                </div>
+                <div class="meetings-list" style="margin-top: 30px;">
+                    <h2>Your Scheduled Meetings</h2>
+                    <div id="meetingsList"></div>
+                </div>
+            </div>
+            <div id="lectures" class="section" style="display: none;">
+                <h2>Lecture Uploads</h2>
+                <p>Upload recorded lectures for your students to review.</p>
+                <div class="form-container">
+                    <form id="lectureUploadForm">
+                        <div class="form-group">
+                            <label for="lectureTitle">Lecture Title:</label>
+                            <input type="text" id="lectureTitle" required placeholder="Enter lecture title">
+                        </div>
+                        <div class="form-group">
+                            <label for="lectureDescription">Description:</label>
+                            <textarea id="lectureDescription" placeholder="Enter lecture description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="lectureFile">Upload Recorded Lecture:</label>
+                            <input type="file" id="lectureFile" required>
+                        </div>
+                        <button type="submit">Upload Lecture</button>
+                    </form>
+                </div>
+                <p id="lectureUploadStatus" class="success-message"></p>
+                <div id="uploadedLectures">
+                    <h3>Uploaded Lectures</h3>
+                    <ul id="lectureList"></ul>
+                </div>
+            </div>
+            <div id="assignments" class="section" style="display: none;">
+                <h2>Assignment Management</h2>
+                <p>Create and manage assignments for your students.</p>
+                <button id="createAssignment">Create New Assignment</button>
+                <div id="assignmentFormContainer"></div>
+                <div id="existingAssignments">
+                    <h3>Existing Assignments</h3>
+                    <table id="assignmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignmentsBody"></tbody>
+                    </table>
+                    <div id="noAssignmentsMessage" class="empty-message" style="display: none;">
+                        No assignments created yet. Use the "Create New Assignment" button to get started.
+                    </div>
+                </div>
+            </div>
+            <div id="notifications" class="section" style="display: none;">
+                <h2>Notifications & Announcements</h2>
+                <p>Send important announcements to your students.</p>
+                <div class="form-container">
+                    <form id="announcementForm">
+                        <div class="form-group">
+                            <label for="announcementTitle">Announcement Title:</label>
+                            <input type="text" id="announcementTitle" required placeholder="Enter announcement title">
+                        </div>
+                        <div class="form-group">
+                            <label for="announcementText">Announcement Text:</label>
+                            <textarea id="announcementText" required placeholder="Enter your announcement"></textarea>
+                        </div>
+                        <button type="submit">Send Announcement</button>
+                    </form>
+                </div>
+                <p id="announcementStatus" class="success-message"></p>
+                <div id="sentAnnouncements">
+                    <h3>Sent Announcements</h3>
+                    <ul id="announcementList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date and time update function
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateDateTime() {
+                const now = new Date();
+                const dateTimeString = now.toLocaleDateString() + " - " +
+                    now.toLocaleTimeString() + " (" + now.toLocaleDateString(undefined, { weekday: 'long' }) + ")";
+
+                document.querySelectorAll("header h1").forEach(header => {
+                    let extraSpan = header.querySelector(".datetime");
+                    if (!extraSpan) {
+                        extraSpan = document.createElement("span");
+                        extraSpan.classList.add("datetime");
+                        extraSpan.style.display = "block";
+                        extraSpan.style.fontSize = "16px";
+                        extraSpan.style.marginTop = "5px";
+                        header.appendChild(extraSpan);
+                    }
+                    extraSpan.textContent = dateTimeString;
+                });
+            }
+
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginForm = document.getElementById("loginForm");
+            const loginPage = document.getElementById("loginPage");
+            const dashboards = {
+                Student: document.getElementById("studentDashboard"),
+                Administrator: document.getElementById("adminDashboard"),
+                ClassTeacher: document.getElementById("teacherDashboard")
+            };
+
+            // Predefined user credentials
+            const users = {
+                Administrator: { username: "admin@example.com", password: "admin123" },
+                Student: { username: "student@example.com", password: "student123" },
+                ClassTeacher: { username: "teacher@example.com", password: "teacher123" }
+            };
+
+            // Handle login form submission
+            loginForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const userType = document.querySelector("select[name='userType']").value;
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+
+                // Validate credentials
+                if (users[userType] && users[userType].username === username && users[userType].password === password) {
+                    loginPage.style.display = "none";
+                    Object.values(dashboards).forEach(dashboard => dashboard.style.display = "none");
+                    dashboards[userType].style.display = "block";
+
+                    // Save current user type to session storage
+                    sessionStorage.setItem('currentUser Type', userType);
+                    sessionStorage.setItem('currentUsername', username);
+
+                    // If it's a student login, check if attendance needs to be marked
+                    if (userType === "Student") {
+                        checkAttendanceStatus();
+                    } else if (userType === "ClassTeacher") {
+                        // Show default section for teacher
+                        showSection('attendance');
+                    }
+                } else {
+                    alert("Invalid credentials. Please try again.");
+                }
+            });
+
+            // Initialize attendance functionality
+            initializeAttendance();
+
+            // Initialize teacher dashboard
+            initializeTeacherDashboard();
+        });
+
+        // Function to show the selected section
+        function showSection(sectionId) {
+            // Get current dashboard
+            const currentUserType = sessionStorage.getItem('currentUser Type');
+            let currentDashboard;
+
+            if (currentUserType === "Student") {
+                currentDashboard = document.getElementById("studentDashboard");
+            } else if (currentUserType === "ClassTeacher") {
+                currentDashboard = document.getElementById("teacherDashboard");
+            } else if (currentUserType === "Administrator") {
+                currentDashboard = document.getElementById("adminDashboard");
+            }
+
+            if (!currentDashboard) return;
+
+            // Hide all sections in the current dashboard
+            const sections = currentDashboard.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show the selected section
+            const targetSection = currentDashboard.querySelector(`#${sectionId}`);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Handle specific functionality based on section and dashboard
+            if (currentUserType === "Student") {
+                if (sectionId === 'attendance') {
+                    checkAttendanceStatus();
+                    loadAttendanceRecords();
+                } else if (sectionId === 'schedule') {
+                    loadClassSchedule();
+                }
+            } else if (currentUserType === "ClassTeacher") {
+                if (sectionId === 'attendance') {
+                    loadAllStudentsAttendance();
+                } else if (sectionId === 'lectures') {
+                    loadUploadedLectures();
+                } else if (sectionId === 'assignments') {
+                    loadExistingAssignments();
+                } else if (sectionId === 'notifications') {
+                    loadSentAnnouncements();
+                }
+            }
+        }
+
+        // Function to handle logout
+        function logout() {
+            alert('You have been logged out.');
+            // Clear session storage
+            sessionStorage.removeItem('currentUser Type');
+            sessionStorage.removeItem('currentUsername');
+
+            // Show login page and hide dashboards
+            document.getElementById("loginPage").style.display = "flex";
+            document.querySelectorAll('.dashboard').forEach(dashboard => {
+                dashboard.style.display = "none";
+            });
+        }
+
+        // Initialize the attendance functionality
+        function initializeAttendance() {
+            const markAttendanceBtn = document.getElementById('markAttendance');
+            if (markAttendanceBtn) {
+                markAttendanceBtn.addEventListener('click', markAttendance);
+            }
+
+            // Initialize assignment form
+            const assignmentForm = document.getElementById('assignmentForm');
+            if (assignmentForm) {
+                assignmentForm.addEventListener('submit', submitAssignment);
+            }
+
+            // Initialize leave form
+            const leaveForm = document.getElementById('leaveForm');
+            if (leaveForm) {
+                leaveForm.addEventListener('submit', submitLeaveRequest);
+            }
+
+            // Check attendance status when the page loads
+            checkAttendanceStatus();
+        }
+
+        // Function to check if attendance needs to be marked
+        function checkAttendanceStatus() {
+            // Only check attendance for students
+            const currentUserType = sessionStorage.getItem('currentUser Type');
+            if (currentUserType !== "Student") return;
+
+            const today = new Date();
+            const currentDate = today.toLocaleDateString();
+            const attendanceRecords = getAttendanceRecords();
+            const attendanceStatus = document.getElementById('attendanceStatus');
+            const markAttendanceBtn = document.getElementById('markAttendance');
+
+            // Check if attendance is already marked for today
+            const todayRecord = attendanceRecords.find(record => record.date === currentDate);
+
+            if (attendanceStatus) {
+                if (todayRecord) {
+                    attendanceStatus.textContent = `Your attendance for today (${currentDate}) is marked as "${todayRecord.status}".`;
+                    attendanceStatus.className = todayRecord.status.toLowerCase();
+
+                    // Disable the mark attendance button if already marked
+                    if (markAttendanceBtn) {
+                        markAttendanceBtn.disabled = true;
+                        markAttendanceBtn.textContent = "Attendance Already Marked";
+                    }
+                } else {
+                    const currentHour = today.getHours();
+
+                    // Automatic absent marking after 10 AM
+                    if (currentHour >= 10) {
+                        markAbsent();
+                        if (markAttendanceBtn) {
+                            markAttendanceBtn.disabled = true;
+                            markAttendanceBtn.textContent = "Attendance Marked as Absent (After 10 AM)";
+                        }
+                    } else {
+                        attendanceStatus.textContent = "Please mark your attendance for today before 10:00 AM.";
+                        attendanceStatus.className = "";
+
+                        if (markAttendanceBtn) {
+                            markAttendanceBtn.disabled = false;
+                            markAttendanceBtn.textContent = "Mark Attendance";
+                        }
+                    }
+                }
+            }
+        }
+
+        // Function to get attendance records from localStorage
+        function getAttendanceRecords() {
+            const username = sessionStorage.getItem('currentUsername') || 'student@example.com';
+            const storageKey = `attendanceRecords_${username}`;
+            return JSON.parse(localStorage.getItem(storageKey)) || [];
+        }
+
+        // Function to mark attendance
+        function markAttendance() {
+            const today = new Date();
+            const date = today.toLocaleDateString();
+            const day = today.toLocaleString('en-US', { weekday: 'long' });
+            const time = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const username = sessionStorage.getItem('currentUsername') || 'student@example.com';
+            const storageKey = `attendanceRecords_${username}`;
+
+            // Get attendance records
+            const attendanceRecords = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            // Check if attendance is already marked for today
+            const todayRecord = attendanceRecords.find(record => record.date === date);
+
+            if (!todayRecord) {
+                // Create new attendance record
+                const record = { date, day, time, status: 'Present' };
+                attendanceRecords.push(record);
+                localStorage.setItem(storageKey, JSON.stringify(attendanceRecords));
+
+                // Show the attendance table
+                const attendanceTableContainer = document.getElementById('attendanceTableContainer');
+                if (attendanceTableContainer) {
+                    attendanceTableContainer.style.display = 'block';
+                }
+
+                // Update attendance status
+                const attendanceStatus = document.getElementById('attendanceStatus');
+                if (attendanceStatus) {
+                    attendanceStatus.textContent = `Your attendance for today (${date}) is marked as "Present".`;
+                    attendanceStatus.className = "present";
+                }
+
+                // Disable the mark attendance button
+                const markAttendanceBtn = document.getElementById('markAttendance');
+                if (markAttendanceBtn) {
+                    markAttendanceBtn.disabled = true;
+                    markAttendanceBtn.textContent = "Attendance Already Marked";
+                }
+
+                // Load the updated attendance records
+                loadAttendanceRecords();
+            }
+        }
+
+        // Function to mark student as absent (automatically called after 10 AM)
+        function markAbsent() {
+            // Only mark absent for students
+            const currentUserType = sessionStorage.getItem('currentUser Type');
+            if (currentUserType !== "Student") return;
+
+            const today = new Date();
+            const date = today.toLocaleDateString();
+            const day = today.toLocaleString('en-US', { weekday: 'long' });
+            const time = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const username = sessionStorage.getItem('currentUsername') || 'student@example.com';
+            const storageKey = `attendanceRecords_${username}`;
+
+            // Get attendance records
+            const attendanceRecords = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            // Check if attendance is already marked for today
+            const todayRecord = attendanceRecords.find(record => record.date === date);
+
+            if (!todayRecord) {
+                // Create new attendance record with absent status
+                const record = { date, day, time, status: 'Absent' };
+                attendanceRecords.push(record);
+                localStorage.setItem(storageKey, JSON.stringify(attendanceRecords));
+
+                // Update attendance status
+                const attendanceStatus = document.getElementById('attendanceStatus');
+                if (attendanceStatus) {
+                    attendanceStatus.textContent = `Your attendance for today (${date}) is automatically marked as "Absent" (after 10:00 AM).`;
+                    attendanceStatus.className = "absent";
+                }
+
+                // Load the updated attendance records
+                loadAttendanceRecords();
+            }
+        }
+
+        // Function to load attendance records into table
+        function loadAttendanceRecords() {
+            const attendanceBody = document.getElementById('attendanceBody');
+            const attendanceTableContainer = document.getElementById('attendanceTableContainer');
+
+            if (!attendanceBody || !attendanceTableContainer) return;
+
+            const attendanceRecords = getAttendanceRecords();
+
+            if (attendanceRecords.length > 0) {
+                attendanceTableContainer.style.display = 'block';
+                attendanceBody.innerHTML = '';
+
+                // Sort records by date (newest first)
+                attendanceRecords.sort(( a, b) => {
+                    return new Date(b.date) - new Date(a.date);
+                });
+
+                // Populate table with records
+                attendanceRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.date}</td>
+                        <td>${record.day}</td>
+                        <td>${record.time}</td>
+                        <td class="${record.status.toLowerCase()}">${record.status}</td>
+                    `;
+                    attendanceBody.appendChild(row);
+                });
+            } else {
+                attendanceTableContainer.style.display = 'none';
+            }
+        }
+
+        // Function to submit assignment
+        function submitAssignment(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('assignment');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            if (fileInput && fileInput.files.length > 0 && uploadStatus) {
+                const filename = fileInput.files[0].name;
+                uploadStatus.textContent = `Assignment "${filename}" uploaded successfully.`;
+                uploadStatus.style.color = 'green';
+
+                // Reset form
+                event.target.reset();
+            } else if (uploadStatus) {
+                uploadStatus.textContent = "Please select a file to upload.";
+                uploadStatus.style.color = 'red';
+            }
+        }
+
+        // Function to submit leave request
+        function submitLeaveRequest(event) {
+            event.preventDefault();
+            const leaveReason = document.getElementById('leaveReason');
+            const leaveDate = document.getElementById('leaveDate');
+            const leaveStatus = document.getElementById('leaveStatus');
+
+            if (leaveReason && leaveDate && leaveStatus) {
+                const reason = leaveReason.value;
+                const date = leaveDate.value;
+
+                if (reason && date) {
+                    // Store leave request in localStorage
+                    const username = sessionStorage.getItem('currentUsername') || 'student@example.com';
+                    const storageKey = `leaveRequests_${username}`;
+                    const leaveRequests = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+                    leaveRequests.push({
+                        reason,
+                        date,
+                        status: 'Pending',
+                        submittedOn: new Date().toLocaleDateString()
+                    });
+
+                    localStorage.setItem(storageKey, JSON.stringify(leaveRequests));
+
+                    // Update status
+                    leaveStatus.textContent = `Leave request for ${new Date(date).toLocaleDateString()} submitted successfully.`;
+                    leaveStatus.style.color = 'green';
+
+                    // Reset form
+                    event.target.reset();
+                } else {
+                    leaveStatus.textContent = "Please fill in all fields.";
+                    leaveStatus.style.color = 'red';
+                }
+            }
+        }
+
+        // Initialize Teacher Dashboard functionality
+        function initializeTeacherDashboard() {
+            // Set up event listeners for teacher dashboard
+            const filterAttendanceBtn = document.getElementById('filterAttendance');
+            if (filterAttendanceBtn) {
+                filterAttendanceBtn.addEventListener('click', filterAttendanceByDate);
+            }
+
+            const reviewAllAttendanceBtn = document.getElementById('reviewAllAttendance');
+            if (reviewAllAttendanceBtn) {
+                reviewAllAttendanceBtn.addEventListener('click', loadAllStudentsAttendance);
+            }
+
+            const generateMeetingLinkBtn = document.getElementById('generateMeetingLink');
+            if (generateMeetingLinkBtn) {
+                generateMeetingLinkBtn.addEventListener('click', generateMeetingLink);
+            }
+
+            const copyLinkBtn = document.getElementById('copyLink');
+            if (copyLinkBtn) {
+                copyLinkBtn.addEventListener('click', copyMeetingLink);
+            }
+
+            const lectureUploadForm = document.getElementById('lectureUploadForm');
+            if (lectureUploadForm) {
+                lectureUploadForm.addEventListener('submit', uploadLecture);
+            }
+
+            const createAssignmentBtn = document.getElementById('createAssignment');
+            if (createAssignmentBtn) {
+                createAssignmentBtn.addEventListener('click', showAssignmentForm);
+            }
+
+            const announcementForm = document.getElementById('announcementForm');
+            if (announcementForm) {
+                announcementForm.addEventListener('submit', sendAnnouncement);
+            }
+        }
+
+        // Function to load all students' attendance records
+        function loadAllStudentsAttendance() {
+            const teacherAttendanceBody = document.getElementById('teacherAttendanceBody');
+            const noAttendanceData = document.getElementById('noAttendanceData');
+
+            if (!teacherAttendanceBody || !noAttendanceData) return;
+
+            const allRecords = getAllStudentsAttendanceRecords();
+
+            if (allRecords.length > 0) {
+                teacherAttendanceBody.innerHTML = '';
+                noAttendanceData.style.display = 'none';
+
+                // Populate table with records
+                allRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.student}</td>
+                        <td>${record.date}</td>
+                        <td>${record.day}</td>
+                        <td>${record.time }</td>
+                        <td class="${record.status.toLowerCase()}">${record.status}</td>
+                    `;
+                    teacherAttendanceBody.appendChild(row);
+                });
+            } else {
+                teacherAttendanceBody.innerHTML = '';
+                noAttendanceData.style.display = 'block';
+            }
+        }
+
+        // Function to filter attendance by date
+        function filterAttendanceByDate() {
+            const dateInput = document.getElementById('attendanceDate');
+            const teacherAttendanceBody = document.getElementById('teacherAttendanceBody');
+            const noAttendanceData = document.getElementById('noAttendanceData');
+
+            if (!dateInput || !teacherAttendanceBody || !noAttendanceData) return;
+
+            const selectedDate = dateInput.value;
+
+            if (!selectedDate) {
+                alert('Please select a date to filter.');
+                return;
+            }
+
+            const allRecords = getAllStudentsAttendanceRecords();
+            const selectedDateStr = new Date(selectedDate).toLocaleDateString();
+            const filteredRecords = allRecords.filter(record => record.date === selectedDateStr);
+
+            if (filteredRecords.length > 0) {
+                teacherAttendanceBody.innerHTML = '';
+                noAttendanceData.style.display = 'none';
+
+                // Populate table with filtered records
+                filteredRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.student}</td>
+                        <td>${record.date}</td>
+                        <td>${record.day}</td>
+                        <td>${record.time}</td>
+                        <td class="${record.status.toLowerCase()}">${record.status}</td>
+                    `;
+                    teacherAttendanceBody.appendChild(row);
+                });
+            } else {
+                teacherAttendanceBody.innerHTML = '';
+                noAttendanceData.style.display = 'block';
+                noAttendanceData.textContent = `No attendance records found for ${selectedDateStr}.`;
+            }
+        }
+
+        // Load meetings when page loads
+        document.addEventListener('DOMContentLoaded', loadMeetings);
+
+        // Function to generate a real meeting link using Jitsi Meet
+        function generateMeetingLink() {
+            const meetingTitle = document.getElementById('meetingTitle');
+            const meetingDate = document.getElementById('meetingDate');
+            const meetingTime = document.getElementById('meetingTime');
+            const meetingLinkResult = document.getElementById('meetingLinkResult');
+            const generatedLink = document.getElementById('generatedLink');
+
+            if (!meetingTitle || !meetingDate || !meetingTime || !meetingLinkResult || !generatedLink) return;
+
+            const title = meetingTitle.value.trim();
+            const date = meetingDate.value;
+            const time = meetingTime.value;
+
+            if (!title || !date || !time) {
+                alert('Please fill in all fields to generate a meeting link.');
+                return;
+            }
+
+            // Generate a sanitized room name from the title
+            const roomName = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + '_' + Date.now().toString(36);
+            const link = `https://meet.jit.si/${roomName}`;
+
+            // Store meeting in localStorage for the teacher
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `meetings_${username}`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            meetings.push({
+                title,
+                date,
+                time,
+                link,
+                created: new Date().toLocaleString()
+            });
+
+            localStorage.setItem(storageKey, JSON.stringify(meetings));
+
+            // Also store the meeting for students to access
+            const studentStorageKey = `meetings_for_students`;
+            const studentMeetings = JSON.parse(localStorage.getItem(studentStorageKey)) || [];
+
+            studentMeetings.push({
+                title,
+                date,
+                time,
+                link,
+                created: new Date().toLocaleString()
+            });
+
+            localStorage.setItem(studentStorageKey, JSON.stringify(studentMeetings));
+
+            // Display the generated link
+            generatedLink.textContent = link;
+            meetingLinkResult.style.display = 'block';
+
+            // Refresh the meetings list
+            loadMeetings();
+        }
+
+        // Function to load and display saved meetings
+        function loadMeetings() {
+            const meetingsListElement = document.getElementById('meetingsList');
+            if (!meetingsListElement) return;
+
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `meetings_${username}`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (meetings.length === 0) {
+                meetingsListElement.innerHTML = '<p class="no-meetings">No meetings scheduled yet.</p>';
+                return;
+            }
+
+            // Sort meetings by date and time
+            meetings.sort((a, b) => {
+                const dateA = new Date(`${a.date}T${a.time }`);
+                const dateB = new Date(`${b.date}T${b.time}`);
+                return dateA - dateB;
+            });
+
+            // Create table to display meetings
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            meetings.forEach((meeting, index) => {
+                const meetingDate = new Date(`${meeting.date}T${meeting.time}`);
+                const formattedDate = meetingDate.toLocaleDateString();
+                const formattedTime = meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                tableHTML += `
+                    <tr>
+                        <td>${meeting.title}</td>
+                        <td>${formattedDate}</td>
+                        <td>${formattedTime}</td>
+                        <td>
+                            <button onclick="copyMeetingLinkFromList(${index})">Copy Link</button>
+                            <button onclick="joinMeetingFromList(${index})">Join</button>
+                            <button onclick="deleteMeeting(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            meetingsListElement.innerHTML = tableHTML;
+        }
+
+        // Function to copy a meeting link from the list
+        function copyMeetingLinkFromList(index) {
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `meetings_${username}`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (index >= 0 && index < meetings.length) {
+                const link = meetings[index].link;
+
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(link)
+                        .then(() => {
+                            alert('Meeting link copied to clipboard!');
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy link: ', err);
+                            alert('Failed to copy link. Please select and copy manually.');
+                        });
+                } else {
+                    // Fallback method for older browsers
+                    const tempInput = document.createElement('input');
+                    tempInput.value = link;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    alert('Meeting link copied to clipboard!');
+                }
+            }
+        }
+
+        // Function to join a meeting from the list
+        function joinMeetingFromList(index) {
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `meetings_${username}`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (index >= 0 && index < meetings.length) {
+                const link = meetings[index].link;
+                window.open(link, '_blank');
+            }
+        }
+
+        // Function to delete a meeting
+        function deleteMeeting(index) {
+            if (!confirm('Are you sure you want to delete this meeting?')) return;
+
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `meetings_${username}`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (index >= 0 && index < meetings.length) {
+                // Get the meeting details
+                const meetingToDelete = meetings[index];
+
+                // Remove from teacher's meetings
+                meetings.splice(index, 1);
+                localStorage.setItem(storageKey, JSON.stringify(meetings));
+
+                // Also remove from student's view
+                const studentStorageKey = `meetings_for_students`;
+                const studentMeetings = JSON.parse(localStorage.getItem(studentStorageKey)) || [];
+
+                // Find and remove the meeting with the same link
+                const studentMeetingIndex = studentMeetings.findIndex(m => m.link === meetingToDelete.link);
+                if (studentMeetingIndex !== -1) {
+                    studentMeetings.splice(studentMeetingIndex, 1);
+                    localStorage.setItem(studentStorageKey, JSON.stringify(studentMeetings));
+                }
+
+                loadMeetings();
+            }
+        }
+
+        // Function to load class schedule for students
+        function loadClassSchedule() {
+            const classList = document.getElementById('classList');
+            if (!classList) return;
+
+            // Retrieve meetings from localStorage
+            const storageKey = `meetings_for_students`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (meetings.length > 0) {
+                classList.innerHTML = ''; // Clear existing content
+
+                // Sort meetings by date and time
+                meetings.sort((a, b) => {
+                    const dateA = new Date(`${a.date}T${a.time}`);
+                    const dateB = new Date(`${b.date}T ${b.time}`);
+                    return dateA - dateB;
+                });
+
+                meetings.forEach((meeting) => {
+                    const meetingDate = new Date(`${meeting.date}T${meeting.time}`);
+                    const formattedDate = meetingDate.toLocaleDateString();
+                    const formattedTime = meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    const li = document.createElement('li');
+                    li.className = 'class-item';
+                    li.style.margin = '10px 0';
+                    li.style.padding = '15px';
+                    li.style.borderRadius = '8px';
+                    li.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+                    li.style.backgroundColor = '#f9f9f9';
+
+                    li.innerHTML = `
+                        <strong>${meeting.title}</strong> 
+                        <span style="color: #666;">(${formattedDate} at ${formattedTime})</span>
+                        <p style="margin-top: 8px;">Meeting Link: 
+                            <a href="${meeting.link}" target="_blank" style="color: #0078d7; text-decoration: underline;">
+                                ${meeting.link.substring(0, 30)}...
+                            </a>
+                        </p>
+                        <button onclick="joinClass('${meeting.link}')" 
+                            style="margin-top: 8px; padding: 8px 15px; background-color: #007bff; color: white; 
+                            border: none; border-radius: 4px; cursor: pointer;">
+                            Join Now
+                        </button>
+                    `;
+
+                    classList.appendChild(li);
+                });
+            } else {
+                classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled yet.</li>';
+            }
+        }
+
+        // Function for student to join class
+        function joinClass(link) {
+            window.open(link, '_blank');
+        }
+
+        // Function to copy meeting link to clipboard
+        function copyMeetingLink() {
+            const generatedLink = document.getElementById('generatedLink');
+
+            if (!generatedLink) return;
+
+            const link = generatedLink.textContent;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link)
+                    .then(() => {
+                        alert('Meeting link copied to clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy link: ', err);
+                        alert('Failed to copy link. Please select and copy manually.');
+                    });
+            } else {
+                // Fallback method for older browsers
+                const tempInput = document.createElement('input');
+                tempInput.value = link;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                alert('Meeting link copied to clipboard!');
+            }
+        }
+
+        // Function to join the meeting directly
+        function joinMeeting() {
+            const generatedLink = document.getElementById('generatedLink');
+
+            if (!generatedLink) return;
+
+            const link = generatedLink.textContent;
+            window.open(link, '_blank');
+        }
+
+        // Function to get all students' attendance records
+        function getAllStudentsAttendanceRecords() {
+            const studentUsernames = ['student@example.com', 'student1@example.com', 'student2@example.com'];
+            let allRecords = [];
+            
+            studentUsernames.forEach(username => {
+                const storageKey = `attendanceRecords_${username}`;
+                const records = JSON.parse(localStorage.getItem(storageKey)) || [];
+                
+                const studentRecords = records.map(record => ({
+                    ...record,
+                    student: username
+                }));
+                
+                allRecords = [...allRecords, ...studentRecords];
+            });
+            
+            allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            return allRecords;
+        }
+
+        // Update the loadAllStudentsAttendance function to use our new function
+        function loadAllStudentsAttendance() {
+            const teacherAttendanceBody = document.getElementById('teacherAttendanceBody');
+            const noAttendanceData = document.getElementById('noAttendanceData');
+
+            if (!teacherAttendanceBody || !noAttendanceData) return;
+
+            const allRecords = getAllStudentsAttendanceRecords();
+
+            if (allRecords.length > 0) {
+                teacherAttendanceBody.innerHTML = '';
+                noAttendanceData.style.display = 'none';
+
+                allRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.student}</td>
+                        <td>${record.date}</td>
+                        <td>${record.day}</td>
+                        <td>${record.time}</td>
+                        <td class="${record.status.toLowerCase()}">${record.status}</td>
+                    `;
+                    teacherAttendanceBody.appendChild(row);
+                });
+            } else {
+                teacherAttendanceBody.innerHTML = '';
+ noAttendanceData.style.display = 'block';
+            }
+        }
+
+        // Update the filterAttendanceByDate function
+        function filterAttendanceByDate() {
+            const dateInput = document.getElementById('attendanceDate');
+            const teacherAttendanceBody = document.getElementById('teacherAttendanceBody');
+            const noAttendanceData = document.getElementById('noAttendanceData');
+
+            if (!dateInput || !teacherAttendanceBody || !noAttendanceData) return;
+
+            const selectedDate = dateInput.value;
+
+            if (!selectedDate) {
+                alert('Please select a date to filter.');
+                return;
+            }
+
+            const allRecords = getAllStudentsAttendanceRecords();
+            const selectedDateObj = new Date(selectedDate);
+            const selectedDateStr = selectedDateObj.toLocaleDateString();
+            const filteredRecords = allRecords.filter(record => record.date === selectedDateStr);
+
+            if (filteredRecords.length > 0) {
+                teacherAttendanceBody.innerHTML = '';
+                noAttendanceData.style.display = 'none';
+
+                filteredRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.student}</td>
+                        <td>${record.date}</td>
+                        <td>${record.day}</td>
+                        <td>${record.time}</td>
+                        <td class="${record.status.toLowerCase()}">${record.status}</td>
+                    `;
+                    teacherAttendanceBody.appendChild(row);
+                });
+            } else {
+                teacherAttendanceBody.innerHTML = '';
+                noAttendanceData.style.display = 'block';
+                noAttendanceData.textContent = `No attendance records found for ${selectedDateObj.toLocaleDateString()}.`;
+            }
+        }
+
+        // Function to generate sample data for testing purposes
+        function generateSampleAttendanceData() {
+            const studentUsernames = ['student@example.com', 'student1@example.com', 'student2@example.com'];
+            const statuses = ['Present', 'Absent'];
+            
+            studentUsernames.forEach(username => {
+                const storageKey = `attendanceRecords_${username}`;
+                let records = [];
+                
+                for (let i = 0; i < 5; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    
+                    const record = {
+                        date: date.toLocaleDateString(),
+                        day: date.toLocaleString('en-US', { weekday: 'long' }),
+                        time: '08:30 AM',
+                        status: statuses[Math.floor(Math.random() * statuses.length)]
+                    };
+                    
+                    records.push(record);
+                }
+                
+                localStorage.setItem(storageKey, JSON.stringify(records));
+            });
+            
+            alert('Sample attendance data generated for testing purposes.');
+        }
+
+        // Add this to teacher dashboard initialization if needed
+
+        
+
+        
+       
+    </script>
+</body>
+</html>
