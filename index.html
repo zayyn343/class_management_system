@@ -260,6 +260,29 @@
             font-weight: bold;
             margin-top: 10px;
         }
+        .meeting-generator {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+        .meetings-list table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .meetings-list th {
+            background: #007bff;
+            color: white;
+            padding: 12px;
+        }
+        .meetings-list td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
     </style>
 </head>
 <body>
@@ -306,6 +329,15 @@
         <div class="content">
             <div id="schedule" class="section" style="display: none;">
                 <h2>Class Schedule</h2>
+                <div class="form-group">
+                    <label for="courseSelect">Select Course:</label>
+                    <select id="courseSelect" class="form-group mb-3">
+                        <option value="">Select Course</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Graphic Designing">Graphic Designing</option>
+                        <option value="E-commerce">E-commerce</option>
+                    </select>
+                </div>
                 <ul id="classList"></ul>
             </div>
             <div id="assignments" class="section" style="display: none;">
@@ -465,12 +497,16 @@
             </div>
             <div id="meetings" class="section" style="display: none;">
                 <h2>Meeting Link Generation</h2>
-                <p>Create a new meeting link for your virtual class sessions.</p>
-                <div class="form-container" style="max-width: 500px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
+                <div class="meetings" style="max-width: 500px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
                     <h3>Meeting Link Generator</h3>
                     <div class="form-group">
                         <label for="meetingTitle">Meeting Title:</label>
-                        <input type="text" id="meetingTitle" placeholder="Enter meeting title" required>
+                        <select id="meetingTitle" required>
+                            <option value="">Select Course</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Graphic Designing">Graphic Designing</option>
+                            <option value="E-commerce">E-commerce</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="meetingDate">Date:</label>
@@ -649,6 +685,7 @@
         // Function to show the selected section
         function showSection(sectionId) {
             // Get current dashboard
+
             const currentUserType = sessionStorage.getItem('currentUser Type');
             let currentDashboard;
 
@@ -691,6 +728,8 @@
                     loadExistingAssignments();
                 } else if (sectionId === 'notifications') {
                     loadSentAnnouncements();
+                } else if (sectionId === 'meetings') {
+                    loadMeetings();
                 }
             }
         }
@@ -1001,141 +1040,70 @@
             }
         }
 
-        // Function to load all students' attendance records
-        function loadAllStudentsAttendance() {
-            const teacherAttendanceBody = document.getElementById('teacherAttendanceBody');
-            const noAttendanceData = document.getElementById('noAttendanceData');
 
-            if (!teacherAttendanceBody || !noAttendanceData) return;
-
-            const allRecords = getAllStudentsAttendanceRecords();
-
-            if (allRecords.length > 0) {
-                teacherAttendanceBody.innerHTML = '';
-                noAttendanceData.style.display = 'none';
-
-                // Populate table with records
-                allRecords.forEach(record => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${record.student}</td>
-                        <td>${record.date}</td>
-                        <td>${record.day}</td>
-                        <td>${record.time }</td>
-                        <td class="${record.status.toLowerCase()}">${record.status}</td>
-                    `;
-                    teacherAttendanceBody.appendChild(row);
-                });
-            } else {
-                teacherAttendanceBody.innerHTML = '';
-                noAttendanceData.style.display = 'block';
-            }
-        }
-
-        // Function to filter attendance by date
-        function filterAttendanceByDate() {
-            const dateInput = document.getElementById('attendanceDate');
-            const teacherAttendanceBody = document.getElementById('teacherAttendanceBody');
-            const noAttendanceData = document.getElementById('noAttendanceData');
-
-            if (!dateInput || !teacherAttendanceBody || !noAttendanceData) return;
-
-            const selectedDate = dateInput.value;
-
-            if (!selectedDate) {
-                alert('Please select a date to filter.');
-                return;
-            }
-
-            const allRecords = getAllStudentsAttendanceRecords();
-            const selectedDateStr = new Date(selectedDate).toLocaleDateString();
-            const filteredRecords = allRecords.filter(record => record.date === selectedDateStr);
-
-            if (filteredRecords.length > 0) {
-                teacherAttendanceBody.innerHTML = '';
-                noAttendanceData.style.display = 'none';
-
-                // Populate table with filtered records
-                filteredRecords.forEach(record => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${record.student}</td>
-                        <td>${record.date}</td>
-                        <td>${record.day}</td>
-                        <td>${record.time}</td>
-                        <td class="${record.status.toLowerCase()}">${record.status}</td>
-                    `;
-                    teacherAttendanceBody.appendChild(row);
-                });
-            } else {
-                teacherAttendanceBody.innerHTML = '';
-                noAttendanceData.style.display = 'block';
-                noAttendanceData.textContent = `No attendance records found for ${selectedDateStr}.`;
-            }
-        }
-
+      
         // Load meetings when page loads
-        document.addEventListener('DOMContentLoaded', loadMeetings);
+        //document.addEventListener('DOMContentLoaded', loadMeetings);
 
         // Function to generate a real meeting link using Jitsi Meet
         function generateMeetingLink() {
-            const meetingTitle = document.getElementById('meetingTitle');
-            const meetingDate = document.getElementById('meetingDate');
-            const meetingTime = document.getElementById('meetingTime');
-            const meetingLinkResult = document.getElementById('meetingLinkResult');
-            const generatedLink = document.getElementById('generatedLink');
+    const meetingTitle = document.getElementById('meetingTitle');
+    const meetingDate = document.getElementById('meetingDate');
+    const meetingTime = document.getElementById('meetingTime');
+    const meetingLinkResult = document.getElementById('meetingLinkResult');
+    const generatedLink = document.getElementById('generatedLink');
 
-            if (!meetingTitle || !meetingDate || !meetingTime || !meetingLinkResult || !generatedLink) return;
+    if (!meetingTitle || !meetingDate || !meetingTime || !meetingLinkResult || !generatedLink) return;
 
-            const title = meetingTitle.value.trim();
-            const date = meetingDate.value;
-            const time = meetingTime.value;
+    const title = meetingTitle.value.trim();
+    const date = meetingDate.value;
+    const time = meetingTime.value;
 
-            if (!title || !date || !time) {
-                alert('Please fill in all fields to generate a meeting link.');
-                return;
-            }
+    if (!title || !date || !time) {
+        alert('Please fill in all fields to generate a meeting link.');
+        return;
+    }
 
-            // Generate a sanitized room name from the title
-            const roomName = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + '_' + Date.now().toString(36);
-            const link = `https://meet.jit.si/${roomName}`;
+    // Generate a sanitized room name from the title
+    const roomName = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + '_' + Date.now().toString(36);
+    const link = `https://meet.jit.si/${roomName}`;
 
-            // Store meeting in localStorage for the teacher
-            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
-            const storageKey = `meetings_${username}`;
-            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+    // Store meeting in localStorage for the teacher
+    const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+    const storageKey = `meetings_${username}`;
+    const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-            meetings.push({
-                title,
-                date,
-                time,
-                link,
-                created: new Date().toLocaleString()
-            });
+    meetings.push({
+        title,
+        date,
+        time,
+        link,
+        created: new Date().toLocaleString()
+    });
 
-            localStorage.setItem(storageKey, JSON.stringify(meetings));
+    localStorage.setItem(storageKey, JSON.stringify(meetings));
 
-            // Also store the meeting for students to access
-            const studentStorageKey = `meetings_for_students`;
-            const studentMeetings = JSON.parse(localStorage.getItem(studentStorageKey)) || [];
+    // Also store the meeting for students to access
+    const studentStorageKey = `meetings_for_students`;
+    const studentMeetings = JSON.parse(localStorage.getItem(studentStorageKey)) || [];
 
-            studentMeetings.push({
-                title,
-                date,
-                time,
-                link,
-                created: new Date().toLocaleString()
-            });
+    studentMeetings.push({
+        title,
+        date,
+        time,
+        link,
+        created: new Date().toLocaleString()
+    });
 
-            localStorage.setItem(studentStorageKey, JSON.stringify(studentMeetings));
+    localStorage.setItem(studentStorageKey, JSON.stringify(studentMeetings));
 
-            // Display the generated link
-            generatedLink.textContent = link;
-            meetingLinkResult.style.display = 'block';
+    // Display the generated link
+    generatedLink.textContent = link;
+    meetingLinkResult.style.display = 'block';
 
-            // Refresh the meetings list
-            loadMeetings();
-        }
+    // Refresh the meetings list
+    loadMeetings();
+}
 
         // Function to load and display saved meetings
         function loadMeetings() {
@@ -1274,102 +1242,117 @@
         }
 
         // Function to load class schedule for students
-        function loadClassSchedule() {
-            const classList = document.getElementById('classList');
-            if (!classList) return;
+        // Event listener for course selection
+document.getElementById('courseSelect').addEventListener('change', function() {
+    const selectedCourse = this.value;
+    loadClassSchedule(selectedCourse);
+});
 
-            // Retrieve meetings from localStorage
-            const storageKey = `meetings_for_students`;
-            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+function loadClassSchedule(selectedCourse = null) {
+    const classList = document.getElementById('classList');
+    if (!classList) return;
 
-            if (meetings.length > 0) {
-                classList.innerHTML = ''; // Clear existing content
+    // Retrieve meetings from localStorage
+    const storageKey = `meetings_for_students`;
+    const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+    
+    // Filter meetings by selected course if provided
+    const filteredMeetings = selectedCourse ? 
+        meetings.filter(meeting => meeting.title === selectedCourse) : 
+        meetings;
 
-                // Sort meetings by date and time
-                meetings.sort((a, b) => {
-                    const dateA = new Date(`${a.date}T${a.time}`);
-                    const dateB = new Date(`${b.date}T ${b.time}`);
-                    return dateA - dateB;
-                });
+    classList.innerHTML = ''; // Clear existing content
 
-                meetings.forEach((meeting) => {
-                    const meetingDate = new Date(`${meeting.date}T${meeting.time}`);
-                    const formattedDate = meetingDate.toLocaleDateString();
-                    const formattedTime = meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (filteredMeetings.length > 0) {
+        // Sort meetings by date and time
+        filteredMeetings.sort((a, b) => {
+            const dateA = new Date(`${a.date}T${a.time}`);
+            const dateB = new Date(`${b.date}T${b.time}`);
+            return dateA - dateB;
+        });
 
-                    const li = document.createElement('li');
-                    li.className = 'class-item';
-                    li.style.margin = '10px 0';
-                    li.style.padding = '15px';
-                    li.style.borderRadius = '8px';
-                    li.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-                    li.style.backgroundColor = '#f9f9f9';
+        filteredMeetings.forEach((meeting) => {
+            const meetingDate = new Date(`${meeting.date}T${meeting.time}`);
+            const formattedDate = meetingDate.toLocaleDateString();
+            const formattedTime = meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                    li.innerHTML = `
-                        <strong>${meeting.title}</strong> 
-                        <span style="color: #666;">(${formattedDate} at ${formattedTime})</span>
-                        <p style="margin-top: 8px;">Meeting Link: 
-                            <a href="${meeting.link}" target="_blank" style="color: #0078d7; text-decoration: underline;">
-                                ${meeting.link.substring(0, 30)}...
-                            </a>
-                        </p>
-                        <button onclick="joinClass('${meeting.link}')" 
-                            style="margin-top: 8px; padding: 8px 15px; background-color: #007bff; color: white; 
-                            border: none; border-radius: 4px; cursor: pointer;">
-                            Join Now
-                        </button>
-                    `;
+            const li = document.createElement('li');
+            li.className = 'class-item';
+            li.style.margin = '10px 0';
+            li.style.padding = '15px';
+            li.style.borderRadius = '8px';
+            li.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+            li.style.backgroundColor = '#f9f9f9';
 
-                    classList.appendChild(li);
-                });
-            } else {
-                classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled yet.</li>';
-            }
+            li.innerHTML = `
+                <strong>${meeting.title}</strong> 
+                <span style="color: #666;">(${formattedDate} at ${formattedTime})</span>
+                <p style="margin-top: 8px;">Meeting Link: 
+                    <a href="${meeting.link}" target="_blank" style="color: #0078d7; text-decoration: underline;">
+                        ${meeting.link.substring(0, 30)}...
+                    </a>
+                </p>
+                <button onclick="joinClass('${meeting.link}')" 
+                    style="margin-top: 8px; padding: 8px 15px; background-color: #007bff; color: white; 
+                    border: none; border-radius: 4px; cursor: pointer;">
+                    Join Now
+                </button>
+            `;
+
+            classList.appendChild(li);
+        });
+    } else {
+        if (selectedCourse) {
+            classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled for this course.</li>';
+        } else {
+            classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled yet.</li>';
         }
+    }
+}
 
-        // Function for student to join class
-        function joinClass(link) {
-            window.open(link, '_blank');
-        }
+// Function for student to join class
+function joinClass(link) {
+    window.open(link, '_blank');
+}
 
-        // Function to copy meeting link to clipboard
-        function copyMeetingLink() {
-            const generatedLink = document.getElementById('generatedLink');
+// Function to copy meeting link to clipboard
+function copyMeetingLink() {
+    const generatedLink = document.getElementById('generatedLink');
 
-            if (!generatedLink) return;
+    if (!generatedLink) return;
 
-            const link = generatedLink.textContent;
+    const link = generatedLink.textContent;
 
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(link)
-                    .then(() => {
-                        alert('Meeting link copied to clipboard!');
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy link: ', err);
-                        alert('Failed to copy link. Please select and copy manually.');
-                    });
-            } else {
-                // Fallback method for older browsers
-                const tempInput = document.createElement('input');
-                tempInput.value = link;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(link)
+            .then(() => {
                 alert('Meeting link copied to clipboard!');
-            }
-        }
+            })
+            .catch(err => {
+                console.error('Failed to copy link: ', err);
+                alert('Failed to copy link. Please select and copy manually.');
+            });
+    } else {
+        // Fallback method for older browsers
+        const tempInput = document.createElement('input');
+        tempInput.value = link;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        alert('Meeting link copied to clipboard!');
+    }
+}
 
-        // Function to join the meeting directly
-        function joinMeeting() {
-            const generatedLink = document.getElementById('generatedLink');
+// Function to join the meeting directly
+function joinMeeting() {
+    const generatedLink = document.getElementById('generatedLink');
 
-            if (!generatedLink) return;
+    if (!generatedLink) return;
 
-            const link = generatedLink.textContent;
-            window.open(link, '_blank');
-        }
+    const link = generatedLink.textContent;
+    window.open(link, '_blank');
+}
 
         // Function to get all students' attendance records
         function getAllStudentsAttendanceRecords() {
@@ -1464,39 +1447,7 @@
             }
         }
 
-        // Function to generate sample data for testing purposes
-        function generateSampleAttendanceData() {
-            const studentUsernames = ['student@example.com', 'student1@example.com', 'student2@example.com'];
-            const statuses = ['Present', 'Absent'];
-            
-            studentUsernames.forEach(username => {
-                const storageKey = `attendanceRecords_${username}`;
-                let records = [];
-                
-                for (let i = 0; i < 5; i++) {
-                    const date = new Date();
-                    date.setDate(date.getDate() - i);
-                    
-                    const record = {
-                        date: date.toLocaleDateString(),
-                        day: date.toLocaleString('en-US', { weekday: 'long' }),
-                        time: '08:30 AM',
-                        status: statuses[Math.floor(Math.random() * statuses.length)]
-                    };
-                    
-                    records.push(record);
-                }
-                
-                localStorage.setItem(storageKey, JSON.stringify(records));
-            });
-            
-            alert('Sample attendance data generated for testing purposes.');
-        }
-
-        // Add this to teacher dashboard initialization if needed
-
-        
-
+      
         
        
     </script>
