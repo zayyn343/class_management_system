@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             padding: 0;
             background-color: #f4f4f4;
         }
+
         .container {
             display: flex;
             justify-content: center;
@@ -18,6 +20,7 @@
             height: 100vh;
             width: 100%;
         }
+
         .container-login {
             background: white;
             padding: 30px;
@@ -27,15 +30,20 @@
             max-width: 400px;
             text-align: center;
         }
+
         h4 {
             color: #333;
             font-size: 18px;
         }
+
         .form-group {
             margin-bottom: 20px;
             text-align: left;
         }
-        input, select, textarea {
+
+        input,
+        select,
+        textarea {
             width: calc(100% - 24px);
             padding: 12px;
             border: 1px solid #ccc;
@@ -46,11 +54,15 @@
             box-sizing: border-box;
             display: block;
         }
-        input:focus, select:focus, textarea:focus {
+
+        input:focus,
+        select:focus,
+        textarea:focus {
             border-color: #007bff;
             outline: none;
             background: #fff;
         }
+
         .btn-success {
             background: #007bff;
             color: white;
@@ -63,11 +75,15 @@
             font-weight: bold;
             transition: 0.3s;
         }
+
         .btn-success:hover {
             background: #0056b3;
         }
 
-        #studentDashboard, #adminDashboard, #teacherDashboard {
+        #studentDashboard,
+        #adminDashboard,
+        #teacherDashboard {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -75,6 +91,7 @@
             height: 100vh;
             overflow: auto;
             background-color: white;
+
         }
 
         header {
@@ -83,28 +100,34 @@
             padding: 17px;
             text-align: center;
         }
+
         nav {
             background: #333;
             color: white;
             padding: 10px;
             text-align: center;
         }
+
         nav ul {
             list-style: none;
             padding: 0;
         }
+
         nav ul li {
             display: inline;
             margin: 0 15px;
         }
+
         nav ul li a {
             color: white;
             text-decoration: none;
             font-size: 18px;
         }
+
         main {
             padding: 20px;
         }
+
         section {
             background: white;
             padding: 20px;
@@ -112,6 +135,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         button {
             background: #007bff;
             color: white;
@@ -128,18 +152,22 @@
             margin: 10px;
             min-width: 160px;
         }
+
         button:hover {
             background: #0056b3;
             transform: scale(1.05);
         }
+
         button:active {
             transform: scale(0.95);
         }
+
         button:disabled {
             background: #cccccc;
             cursor: not-allowed;
             transform: none;
         }
+
         .dashboard {
             display: none;
             position: fixed;
@@ -157,7 +185,7 @@
             padding: 20px;
             width: 250px;
             position: absolute;
-            height: 120%;
+            height: 150%;
             overflow: auto;
         }
 
@@ -196,11 +224,14 @@
             margin-top: 20px;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             text-align: left;
         }
@@ -260,6 +291,7 @@
             font-weight: bold;
             margin-top: 10px;
         }
+
         .meeting-generator {
             background: white;
             padding: 25px;
@@ -268,23 +300,26 @@
             margin-bottom: 30px;
             display: none;
         }
+
         .meetings-list table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         .meetings-list th {
             background: #007bff;
             color: white;
             padding: 12px;
         }
+
         .meetings-list td {
             padding: 12px;
             border-bottom: 1px solid #ddd;
         }
-
     </style>
 </head>
+
 <body>
     <!-- Login Page -->
     <div class="container">
@@ -300,10 +335,12 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-group" required name="username" id="username" placeholder="Enter Email Address">
+                    <input type="text" class="form-group" required name="username" id="username"
+                        placeholder="Enter Email Address">
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" required class="form-group" id="password" placeholder="Enter Password">
+                    <input type="password" name="password" required class="form-group" id="password"
+                        placeholder="Enter Password">
                 </div>
                 <div class="form-group">
                     <input type="submit" class="btn btn-success btn-block" value="Login" />
@@ -323,10 +360,26 @@
                 <li><button onclick="showSection('assignments')">Assignments</button></li>
                 <li><button onclick="showSection('attendance')">Attendance</button></li>
                 <li><button onclick="showSection('leave')">Apply for Leave</button></li>
+                <li><button onclick="showSection('uploadedLectures')">Uploaded Lectures</button></li>
                 <li><button onclick="logout()">Logout</button></li>
             </ul>
         </div>
         <div class="content">
+            <div id="uploadedLectures" class="section" style="display: none;">
+                <h2>Uploaded Lectures</h2>
+                <div class="form-group">
+                    <label for="studentLectureCourseSelect">Select Course:</label>
+                    <select id="studentLectureCourseSelect" class="form-group mb-3">
+                        <option value="">Select Course</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Graphic Designing">Graphic Designing</option>
+                        <option value="E-commerce">E-commerce</option>
+                    </select>
+                </div>
+                <div id="studentLecturesList"></div>
+            </div>
+
+
             <div id="schedule" class="section" style="display: none;">
                 <h2>Class Schedule</h2>
                 <div class="form-group">
@@ -349,7 +402,7 @@
                 </form>
                 <p id="uploadStatus"></p>
             </div>
-            <div id="attendance" class="section" style="display: none;">
+            <div id="attendance" class="section" style="display: block;">
                 <h2>Mark Attendance</h2>
                 <p>You must mark your attendance before 10:00 AM to be considered present.</p>
                 <p id="attendanceStatus"></p>
@@ -381,7 +434,6 @@
             </div>
         </div>
     </div>
-
     <div id="adminDashboard" class="dashboard">
         <header>
             <h1>Admin Dashboard</h1>
@@ -389,7 +441,7 @@
         <div class="dashboard-container" style="display: flex;">
             <div class="sidebar">
                 <ul>
-                    <li><button onclick="showAdminSection('userManagement')">User  Management</button></li>
+                    <li><button onclick="showAdminSection('userManagement')">User Management</button></li>
                     <li><button onclick="showAdminSection('adminAttendance')">Attendance Tracking</button></li>
                     <li><button onclick="showAdminSection('meetings')">Meeting Management</button></li>
                     <li><button onclick="showAdminSection('lectures')">Recorded Lectures</button></li>
@@ -497,7 +549,8 @@
             </div>
             <div id="meetings" class="section" style="display: none;">
                 <h2>Meeting Link Generation</h2>
-                <div class="meetings" style="max-width: 500px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
+                <div class="meetings"
+                    style="max-width: 500px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
                     <h3>Meeting Link Generator</h3>
                     <div class="form-group">
                         <label for="meetingTitle">Meeting Title:</label>
@@ -535,6 +588,15 @@
                 <p>Upload recorded lectures for your students to review.</p>
                 <div class="form-container">
                     <form id="lectureUploadForm">
+                        <div class="form-group">
+                            <label for="lectureCourse">Select Course:</label>
+                            <select id="lectureCourse" required>
+                                <option value="">Select Course</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Graphic Designing">Graphic Designing</option>
+                                <option value="E-commerce">E-commerce</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="lectureTitle">Lecture Title:</label>
                             <input type="text" id="lectureTitle" required placeholder="Enter lecture title">
@@ -604,89 +666,102 @@
         </div>
     </div>
 
-    <script>
-        // Date and time update function
-        document.addEventListener("DOMContentLoaded", function () {
-            function updateDateTime() {
-                const now = new Date();
-                const dateTimeString = now.toLocaleDateString() + " - " +
-                    now.toLocaleTimeString() + " (" + now.toLocaleDateString(undefined, { weekday: 'long' }) + ")";
+</body>
 
-                document.querySelectorAll("header h1").forEach(header => {
-                    let extraSpan = header.querySelector(".datetime");
-                    if (!extraSpan) {
-                        extraSpan = document.createElement("span");
-                        extraSpan.classList.add("datetime");
-                        extraSpan.style.display = "block";
-                        extraSpan.style.fontSize = "16px";
-                        extraSpan.style.marginTop = "5px";
-                        header.appendChild(extraSpan);
-                    }
-                    extraSpan.textContent = dateTimeString;
-                });
-            }
+<script>
+    // Date and time update function
+    document.addEventListener("DOMContentLoaded", function () {
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeString = now.toLocaleDateString() + " - " +
+                now.toLocaleTimeString() + " (" + now.toLocaleDateString(undefined, { weekday: 'long' }) + ")";
 
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const loginForm = document.getElementById("loginForm");
-            const loginPage = document.getElementById("loginPage");
-            const dashboards = {
-                Student: document.getElementById("studentDashboard"),
-                Administrator: document.getElementById("adminDashboard"),
-                ClassTeacher: document.getElementById("teacherDashboard")
-            };
-
-            // Predefined user credentials
-            const users = {
-                Administrator: { username: "admin@example.com", password: "admin123" },
-                Student: { username: "student@example.com", password: "student123" },
-                ClassTeacher: { username: "teacher@example.com", password: "teacher123" }
-            };
-
-            // Handle login form submission
-            loginForm.addEventListener("submit", function (event) {
-                event.preventDefault();
-                const userType = document.querySelector("select[name='userType']").value;
-                const username = document.getElementById("username").value;
-                const password = document.getElementById("password").value;
-
-                // Validate credentials
-                if (users[userType] && users[userType].username === username && users[userType].password === password) {
-                    loginPage.style.display = "none";
-                    Object.values(dashboards).forEach(dashboard => dashboard.style.display = "none");
-                    dashboards[userType].style.display = "block";
-
-                    // Save current user type to session storage
-                    sessionStorage.setItem('currentUser Type', userType);
-                    sessionStorage.setItem('currentUsername', username);
-
-                    // If it's a student login, check if attendance needs to be marked
-                    if (userType === "Student") {
-                        checkAttendanceStatus();
-                    } else if (userType === "ClassTeacher") {
-                        // Show default section for teacher
-                        showSection('attendance');
-                    }
-                } else {
-                    alert("Invalid credentials. Please try again.");
+            document.querySelectorAll("header h1").forEach(header => {
+                let extraSpan = header.querySelector(".datetime");
+                if (!extraSpan) {
+                    extraSpan = document.createElement("span");
+                    extraSpan.classList.add("datetime");
+                    extraSpan.style.display = "block";
+                    extraSpan.style.fontSize = "16px";
+                    extraSpan.style.marginTop = "5px";
+                    header.appendChild(extraSpan);
                 }
+                extraSpan.textContent = dateTimeString;
+            });
+        }
+
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    });
+
+    function showAdminSection(sectionId) {
+            // Hide all admin sections
+            const adminSections = document.querySelectorAll('.admin-section');
+            adminSections.forEach(section => {
+                section.style.display = 'none';
             });
 
-            // Initialize attendance functionality
-            initializeAttendance();
+            // Show the selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            } else {
+                console.error(`Admin section with ID "${sectionId}" not found. Available sections:`);
+                adminSections.forEach(section => console.log(section.id));
+            }
+        }
 
-            // Initialize teacher dashboard
-            initializeTeacherDashboard();
+    document.addEventListener("DOMContentLoaded", function () {
+        const loginForm = document.getElementById("loginForm");
+        const loginPage = document.getElementById("loginPage");
+        const dashboards = {
+            Student: document.getElementById("studentDashboard"),
+            Administrator: document.getElementById("adminDashboard"),
+            ClassTeacher: document.getElementById("teacherDashboard")
+        };
+
+        // Predefined user credentials
+        const users = {
+            Administrator: { username: "admin@example.com", password: "admin123" },
+            Student: { username: "student@example.com", password: "student123" },
+            ClassTeacher: { username: "teacher@example.com", password: "teacher123" }
+        };
+
+
+        // Handle login form submission
+        loginForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const userType = document.querySelector("select[name='userType']").value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Validate credentials
+            if (users[userType] && users[userType].username === username && users[userType].password === password) {
+                loginPage.style.display = "none";
+                Object.values(dashboards).forEach(dashboard => dashboard.style.display = "none");
+                dashboards[userType].style.display = "block";
+
+                // Save current user type to session storage
+                sessionStorage.setItem('currentUserType', userType); // Fixed: removed space in key name
+                sessionStorage.setItem('currentUsername', username);
+
+                // If it's a student login, check if attendance needs to be marked
+                if (userType === "Student") {
+                    checkAttendanceStatus();
+                } else if (userType === "ClassTeacher") {
+                    // Show default section for teacher
+                    showSection('attendance');
+                } else {
+                }
+            } else {
+                alert("Invalid credentials. Please try again.");
+            }
         });
 
         // Function to show the selected section
-        function showSection(sectionId) {
-            // Get current dashboard
-
-            const currentUserType = sessionStorage.getItem('currentUser Type');
+        window.showSection = function (sectionId) {
+            // Get all sections in the current dashboard
+            const currentUserType = sessionStorage.getItem('currentUserType');
             let currentDashboard;
 
             if (currentUserType === "Student") {
@@ -718,27 +793,106 @@
                     loadAttendanceRecords();
                 } else if (sectionId === 'schedule') {
                     loadClassSchedule();
-                }
-            } else if (currentUserType === "ClassTeacher") {
-                if (sectionId === 'attendance') {
-                    loadAllStudentsAttendance();
-                } else if (sectionId === 'lectures') {
-                    loadUploadedLectures();
-                } else if (sectionId === 'assignments') {
-                    loadExistingAssignments();
-                } else if (sectionId === 'notifications') {
-                    loadSentAnnouncements();
-                } else if (sectionId === 'meetings') {
-                    loadMeetings();
+                } else if (sectionId === 'uploadedLectures') {
+                    // Reset the course selection when the section is shown
+                    const studentLectureCourseSelect = document.getElementById('studentLectureCourseSelect');
+                    if (studentLectureCourseSelect) {
+                        studentLectureCourseSelect.value = '';
+                        document.getElementById('studentLecturesList').innerHTML = '<p>Please select a course to view lectures.</p>';
+                    }
                 }
             }
+        };
+
+        // Function to send announcement
+        function sendAnnouncement(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('announcementTitle').value;
+            const text = document.getElementById('announcementText').value;
+            const announcementStatus = document.getElementById('announcementStatus');
+
+            if (!title || !text) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            // Store announcement in localStorage
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `announcements_${username}`;
+            const announcements = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            announcements.push({
+                title,
+                text,
+                sentOn: new Date().toISOString()
+            });
+
+            localStorage.setItem(storageKey, JSON.stringify(announcements));
+
+            // Update status
+            if (announcementStatus) {
+                announcementStatus.textContent = `Announcement "${title}" sent successfully.`;
+                setTimeout(() => {
+                    announcementStatus.textContent = '';
+                }, 3000);
+            }
+
+            // Reset form
+            document.getElementById('announcementForm').reset();
+
+            // Refresh the announcements list
+            loadSentAnnouncements();
         }
 
+        // Function to load sent announcements
+        function loadSentAnnouncements() {
+            const announcementList = document.getElementById('announcementList');
+            if (!announcementList) return;
+
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `announcements_${username}`;
+            const announcements = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (announcements.length === 0) {
+                announcementList.innerHTML = '<li class="empty-message">No announcements sent yet.</li>';
+                return;
+            }
+
+            // Sort announcements by date (newest first)
+            announcements.sort((a, b) => new Date(b.sentOn) - new Date(a.sentOn));
+
+            announcementList.innerHTML = '';
+            announcements.forEach(announcement => {
+                const sentDate = new Date(announcement.sentOn).toLocaleDateString();
+                const li = document.createElement('li');
+                li.style.padding = '10px';
+                li.style.margin = '10px 0';
+                li.style.backgroundColor = '#f9f9f9';
+                li.style.borderRadius = '5px';
+                li.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+                li.innerHTML = `
+                    <strong>${announcement.title}</strong>
+                    <p>${announcement.text}</p>
+                    <p><small>Sent on ${sentDate}</small></p>
+                `;
+
+                announcementList.appendChild(li);
+            });
+        }
+
+        // Function to show admin dashboard sections
+        
+
+
+
         // Function to handle logout
-        function logout() {
+
+        window.logout = function () {
             alert('You have been logged out.');
             // Clear session storage
-            sessionStorage.removeItem('currentUser Type');
+            sessionStorage.removeItem('currentUserType'); // Fixed: removed space in key name
             sessionStorage.removeItem('currentUsername');
 
             // Show login page and hide dashboards
@@ -748,6 +902,7 @@
             });
         }
 
+
         // Initialize the attendance functionality
         function initializeAttendance() {
             const markAttendanceBtn = document.getElementById('markAttendance');
@@ -755,11 +910,6 @@
                 markAttendanceBtn.addEventListener('click', markAttendance);
             }
 
-            // Initialize assignment form
-            const assignmentForm = document.getElementById('assignmentForm');
-            if (assignmentForm) {
-                assignmentForm.addEventListener('submit', submitAssignment);
-            }
 
             // Initialize leave form
             const leaveForm = document.getElementById('leaveForm');
@@ -774,7 +924,7 @@
         // Function to check if attendance needs to be marked
         function checkAttendanceStatus() {
             // Only check attendance for students
-            const currentUserType = sessionStorage.getItem('currentUser Type');
+            const currentUserType = sessionStorage.getItem('currentUserType');
             if (currentUserType !== "Student") return;
 
             const today = new Date();
@@ -875,7 +1025,7 @@
         // Function to mark student as absent (automatically called after 10 AM)
         function markAbsent() {
             // Only mark absent for students
-            const currentUserType = sessionStorage.getItem('currentUser Type');
+            const currentUserType = sessionStorage.getItem('currentUserType');
             if (currentUserType !== "Student") return;
 
             const today = new Date();
@@ -923,7 +1073,7 @@
                 attendanceBody.innerHTML = '';
 
                 // Sort records by date (newest first)
-                attendanceRecords.sort(( a, b) => {
+                attendanceRecords.sort((a, b) => {
                     return new Date(b.date) - new Date(a.date);
                 });
 
@@ -931,11 +1081,11 @@
                 attendanceRecords.forEach(record => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${record.date}</td>
-                        <td>${record.day}</td>
-                        <td>${record.time}</td>
-                        <td class="${record.status.toLowerCase()}">${record.status}</td>
-                    `;
+                <td>${record.date}</td>
+                <td>${record.day}</td>
+                <td>${record.time}</td>
+                <td class="${record.status.toLowerCase()}">${record.status}</td>
+            `;
                     attendanceBody.appendChild(row);
                 });
             } else {
@@ -943,24 +1093,7 @@
             }
         }
 
-        // Function to submit assignment
-        function submitAssignment(event) {
-            event.preventDefault();
-            const fileInput = document.getElementById('assignment');
-            const uploadStatus = document.getElementById('uploadStatus');
 
-            if (fileInput && fileInput.files.length > 0 && uploadStatus) {
-                const filename = fileInput.files[0].name;
-                uploadStatus.textContent = `Assignment "${filename}" uploaded successfully.`;
-                uploadStatus.style.color = 'green';
-
-                // Reset form
-                event.target.reset();
-            } else if (uploadStatus) {
-                uploadStatus.textContent = "Please select a file to upload.";
-                uploadStatus.style.color = 'red';
-            }
-        }
 
         // Function to submit leave request
         function submitLeaveRequest(event) {
@@ -1041,69 +1174,69 @@
         }
 
 
-      
+
         // Load meetings when page loads
         //document.addEventListener('DOMContentLoaded', loadMeetings);
 
         // Function to generate a real meeting link using Jitsi Meet
         function generateMeetingLink() {
-    const meetingTitle = document.getElementById('meetingTitle');
-    const meetingDate = document.getElementById('meetingDate');
-    const meetingTime = document.getElementById('meetingTime');
-    const meetingLinkResult = document.getElementById('meetingLinkResult');
-    const generatedLink = document.getElementById('generatedLink');
+            const meetingTitle = document.getElementById('meetingTitle');
+            const meetingDate = document.getElementById('meetingDate');
+            const meetingTime = document.getElementById('meetingTime');
+            const meetingLinkResult = document.getElementById('meetingLinkResult');
+            const generatedLink = document.getElementById('generatedLink');
 
-    if (!meetingTitle || !meetingDate || !meetingTime || !meetingLinkResult || !generatedLink) return;
+            if (!meetingTitle || !meetingDate || !meetingTime || !meetingLinkResult || !generatedLink) return;
 
-    const title = meetingTitle.value.trim();
-    const date = meetingDate.value;
-    const time = meetingTime.value;
+            const title = meetingTitle.value.trim();
+            const date = meetingDate.value;
+            const time = meetingTime.value;
 
-    if (!title || !date || !time) {
-        alert('Please fill in all fields to generate a meeting link.');
-        return;
-    }
+            if (!title || !date || !time) {
+                alert('Please fill in all fields to generate a meeting link.');
+                return;
+            }
 
-    // Generate a sanitized room name from the title
-    const roomName = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + '_' + Date.now().toString(36);
-    const link = `https://meet.jit.si/${roomName}`;
+            // Generate a sanitized room name from the title
+            const roomName = title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + '_' + Date.now().toString(36);
+            const link = `https://meet.jit.si/${roomName}`;
 
-    // Store meeting in localStorage for the teacher
-    const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
-    const storageKey = `meetings_${username}`;
-    const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
+            // Store meeting in localStorage for the teacher
+            const username = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+            const storageKey = `meetings_${username}`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-    meetings.push({
-        title,
-        date,
-        time,
-        link,
-        created: new Date().toLocaleString()
-    });
+            meetings.push({
+                title,
+                date,
+                time,
+                link,
+                created: new Date().toLocaleString()
+            });
 
-    localStorage.setItem(storageKey, JSON.stringify(meetings));
+            localStorage.setItem(storageKey, JSON.stringify(meetings));
 
-    // Also store the meeting for students to access
-    const studentStorageKey = `meetings_for_students`;
-    const studentMeetings = JSON.parse(localStorage.getItem(studentStorageKey)) || [];
+            // Also store the meeting for students to access
+            const studentStorageKey = `meetings_for_students`;
+            const studentMeetings = JSON.parse(localStorage.getItem(studentStorageKey)) || [];
 
-    studentMeetings.push({
-        title,
-        date,
-        time,
-        link,
-        created: new Date().toLocaleString()
-    });
+            studentMeetings.push({
+                title,
+                date,
+                time,
+                link,
+                created: new Date().toLocaleString()
+            });
 
-    localStorage.setItem(studentStorageKey, JSON.stringify(studentMeetings));
+            localStorage.setItem(studentStorageKey, JSON.stringify(studentMeetings));
 
-    // Display the generated link
-    generatedLink.textContent = link;
-    meetingLinkResult.style.display = 'block';
+            // Display the generated link
+            generatedLink.textContent = link;
+            meetingLinkResult.style.display = 'block';
 
-    // Refresh the meetings list
-    loadMeetings();
-}
+            // Refresh the meetings list
+            loadMeetings();
+        }
 
         // Function to load and display saved meetings
         function loadMeetings() {
@@ -1121,24 +1254,24 @@
 
             // Sort meetings by date and time
             meetings.sort((a, b) => {
-                const dateA = new Date(`${a.date}T${a.time }`);
+                const dateA = new Date(`${a.date}T${a.time}`);
                 const dateB = new Date(`${b.date}T${b.time}`);
                 return dateA - dateB;
             });
 
             // Create table to display meetings
             let tableHTML = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
             meetings.forEach((meeting, index) => {
                 const meetingDate = new Date(`${meeting.date}T${meeting.time}`);
@@ -1146,23 +1279,23 @@
                 const formattedTime = meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 tableHTML += `
-                    <tr>
-                        <td>${meeting.title}</td>
-                        <td>${formattedDate}</td>
-                        <td>${formattedTime}</td>
-                        <td>
-                            <button onclick="copyMeetingLinkFromList(${index})">Copy Link</button>
-                            <button onclick="joinMeetingFromList(${index})">Join</button>
-                            <button onclick="deleteMeeting(${index})">Delete</button>
-                        </td>
-                    </tr>
-                `;
+            <tr>
+                <td>${meeting.title}</td>
+                <td>${formattedDate}</td>
+                <td>${formattedTime}</td>
+                <td>
+                    <button onclick="copyMeetingLinkFromList(${index})">Copy Link</button>
+                    <button onclick="joinMeetingFromList(${index})">Join</button>
+                    <button onclick="deleteMeeting(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
             });
 
             tableHTML += `
-                    </tbody>
-                </table>
-            `;
+            </tbody>
+        </table>
+    `;
 
             meetingsListElement.innerHTML = tableHTML;
         }
@@ -1243,134 +1376,134 @@
 
         // Function to load class schedule for students
         // Event listener for course selection
-document.getElementById('courseSelect').addEventListener('change', function() {
-    const selectedCourse = this.value;
-    loadClassSchedule(selectedCourse);
-});
-
-function loadClassSchedule(selectedCourse = null) {
-    const classList = document.getElementById('classList');
-    if (!classList) return;
-
-    // Retrieve meetings from localStorage
-    const storageKey = `meetings_for_students`;
-    const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
-    
-    // Filter meetings by selected course if provided
-    const filteredMeetings = selectedCourse ? 
-        meetings.filter(meeting => meeting.title === selectedCourse) : 
-        meetings;
-
-    classList.innerHTML = ''; // Clear existing content
-
-    if (filteredMeetings.length > 0) {
-        // Sort meetings by date and time
-        filteredMeetings.sort((a, b) => {
-            const dateA = new Date(`${a.date}T${a.time}`);
-            const dateB = new Date(`${b.date}T${b.time}`);
-            return dateA - dateB;
+        document.getElementById('courseSelect').addEventListener('change', function () {
+            const selectedCourse = this.value;
+            loadClassSchedule(selectedCourse);
         });
 
-        filteredMeetings.forEach((meeting) => {
-            const meetingDate = new Date(`${meeting.date}T${meeting.time}`);
-            const formattedDate = meetingDate.toLocaleDateString();
-            const formattedTime = meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        function loadClassSchedule(selectedCourse = null) {
+            const classList = document.getElementById('classList');
+            if (!classList) return;
 
-            const li = document.createElement('li');
-            li.className = 'class-item';
-            li.style.margin = '10px 0';
-            li.style.padding = '15px';
-            li.style.borderRadius = '8px';
-            li.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-            li.style.backgroundColor = '#f9f9f9';
+            // Retrieve meetings from localStorage
+            const storageKey = `meetings_for_students`;
+            const meetings = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-            li.innerHTML = `
-                <strong>${meeting.title}</strong> 
-                <span style="color: #666;">(${formattedDate} at ${formattedTime})</span>
-                <p style="margin-top: 8px;">Meeting Link: 
-                    <a href="${meeting.link}" target="_blank" style="color: #0078d7; text-decoration: underline;">
-                        ${meeting.link.substring(0, 30)}...
-                    </a>
-                </p>
-                <button onclick="joinClass('${meeting.link}')" 
-                    style="margin-top: 8px; padding: 8px 15px; background-color: #007bff; color: white; 
-                    border: none; border-radius: 4px; cursor: pointer;">
-                    Join Now
-                </button>
-            `;
+            // Filter meetings by selected course if provided
+            const filteredMeetings = selectedCourse ?
+                meetings.filter(meeting => meeting.title === selectedCourse) :
+                meetings;
 
-            classList.appendChild(li);
-        });
-    } else {
-        if (selectedCourse) {
-            classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled for this course.</li>';
-        } else {
-            classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled yet.</li>';
+            classList.innerHTML = ''; // Clear existing content
+
+            if (filteredMeetings.length > 0) {
+                // Sort meetings by date and time
+                filteredMeetings.sort((a, b) => {
+                    const dateA = new Date(`${a.date}T${a.time}`);
+                    const dateB = new Date(`${b.date}T${b.time}`);
+                    return dateA - dateB;
+                });
+
+                filteredMeetings.forEach((meeting) => {
+                    const meetingDate = new Date(`${meeting.date}T${meeting.time}`);
+                    const formattedDate = meetingDate.toLocaleDateString();
+                    const formattedTime = meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    const li = document.createElement('li');
+                    li.className = 'class-item';
+                    li.style.margin = '10px 0';
+                    li.style.padding = '15px';
+                    li.style.borderRadius = '8px';
+                    li.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+                    li.style.backgroundColor = '#f9f9f9';
+
+                    li.innerHTML = `
+        <strong>${meeting.title}</strong> 
+        <span style="color: #666;">(${formattedDate} at ${formattedTime})</span>
+        <p style="margin-top: 8px;">Meeting Link: 
+            <a href="${meeting.link}" target="_blank" style="color: #0078d7; text-decoration: underline;">
+                ${meeting.link.substring(0, 30)}...
+            </a>
+        </p>
+        <button onclick="joinClass('${meeting.link}')" 
+            style="margin-top: 8px; padding: 8px 15px; background-color: #007bff; color: white; 
+            border: none; border-radius: 4px; cursor: pointer;">
+            Join Now
+        </button>
+    `;
+
+                    classList.appendChild(li);
+                });
+            } else {
+                if (selectedCourse) {
+                    classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled for this course.</li>';
+                } else {
+                    classList.innerHTML = '<li class="empty-message" style="padding: 15px; text-align: center; color: #666;">No classes scheduled yet.</li>';
+                }
+            }
         }
-    }
-}
 
-// Function for student to join class
-function joinClass(link) {
-    window.open(link, '_blank');
-}
+        // Function for student to join class
+        function joinClass(link) {
+            window.open(link, '_blank');
+        }
 
-// Function to copy meeting link to clipboard
-function copyMeetingLink() {
-    const generatedLink = document.getElementById('generatedLink');
+        // Function to copy meeting link to clipboard
+        function copyMeetingLink() {
+            const generatedLink = document.getElementById('generatedLink');
 
-    if (!generatedLink) return;
+            if (!generatedLink) return;
 
-    const link = generatedLink.textContent;
+            const link = generatedLink.textContent;
 
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(link)
-            .then(() => {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link)
+                    .then(() => {
+                        alert('Meeting link copied to clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy link: ', err);
+                        alert('Failed to copy link. Please select and copy manually.');
+                    });
+            } else {
+                // Fallback method for older browsers
+                const tempInput = document.createElement('input');
+                tempInput.value = link;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
                 alert('Meeting link copied to clipboard!');
-            })
-            .catch(err => {
-                console.error('Failed to copy link: ', err);
-                alert('Failed to copy link. Please select and copy manually.');
-            });
-    } else {
-        // Fallback method for older browsers
-        const tempInput = document.createElement('input');
-        tempInput.value = link;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-        alert('Meeting link copied to clipboard!');
-    }
-}
+            }
+        }
 
-// Function to join the meeting directly
-function joinMeeting() {
-    const generatedLink = document.getElementById('generatedLink');
+        // Function to join the meeting directly
+        function joinMeeting() {
+            const generatedLink = document.getElementById('generatedLink');
 
-    if (!generatedLink) return;
+            if (!generatedLink) return;
 
-    const link = generatedLink.textContent;
-    window.open(link, '_blank');
-}
+            const link = generatedLink.textContent;
+            window.open(link, '_blank');
+        }
 
         // Function to get all students' attendance records
         function getAllStudentsAttendanceRecords() {
             const studentUsernames = ['student@example.com', 'student1@example.com', 'student2@example.com'];
             let allRecords = [];
-            
+
             studentUsernames.forEach(username => {
                 const storageKey = `attendanceRecords_${username}`;
                 const records = JSON.parse(localStorage.getItem(storageKey)) || [];
-                
+
                 const studentRecords = records.map(record => ({
                     ...record,
                     student: username
                 }));
-                
+
                 allRecords = [...allRecords, ...studentRecords];
             });
-            
+
             allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
             return allRecords;
         }
@@ -1391,17 +1524,17 @@ function joinMeeting() {
                 allRecords.forEach(record => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${record.student}</td>
-                        <td>${record.date}</td>
-                        <td>${record.day}</td>
-                        <td>${record.time}</td>
-                        <td class="${record.status.toLowerCase()}">${record.status}</td>
-                    `;
+                <td>${record.student}</td>
+                <td>${record.date}</td>
+                <td>${record.day}</td>
+                <td>${record.time}</td>
+                <td class="${record.status.toLowerCase()}">${record.status}</td>
+            `;
                     teacherAttendanceBody.appendChild(row);
                 });
             } else {
                 teacherAttendanceBody.innerHTML = '';
- noAttendanceData.style.display = 'block';
+                noAttendanceData.style.display = 'block';
             }
         }
 
@@ -1432,12 +1565,12 @@ function joinMeeting() {
                 filteredRecords.forEach(record => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${record.student}</td>
-                        <td>${record.date}</td>
-                        <td>${record.day}</td>
-                        <td>${record.time}</td>
-                        <td class="${record.status.toLowerCase()}">${record.status}</td>
-                    `;
+                <td>${record.student}</td>
+                <td>${record.date}</td>
+                <td>${record.day}</td>
+                <td>${record.time}</td>
+                <td class="${record.status.toLowerCase()}">${record.status}</td>
+            `;
                     teacherAttendanceBody.appendChild(row);
                 });
             } else {
@@ -1446,10 +1579,839 @@ function joinMeeting() {
                 noAttendanceData.textContent = `No attendance records found for ${selectedDateObj.toLocaleDateString()}.`;
             }
         }
+        // Function to show assignment form for teachers
+        function showAssignmentForm() {
+            const assignmentFormContainer = document.getElementById('assignmentFormContainer');
+            if (!assignmentFormContainer) return;
 
-      
-        
-       
-    </script>
-</body>
+            assignmentFormContainer.innerHTML = `
+<div class="form-container">
+    <h3>Create New Assignment</h3>
+    <form id="newAssignmentForm">
+        <div class="form-group">
+            <label for="assignmentCourse">Select Course:</label>
+            <select id="assignmentCourse" required>
+                <option value="">Select Course</option>
+                <option value="Web Development">Web Development</option>
+                <option value="Graphic Designing">Graphic Designing</option>
+                <option value="E-commerce">E-commerce</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="assignmentTitle">Assignment Title:</label>
+            <input type="text" id="assignmentTitle" required placeholder="Enter assignment title">
+        </div>
+        <div class="form-group">
+            <label for="assignmentDescription">Description:</label>
+            <textarea id="assignmentDescription" required placeholder="Enter assignment description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="assignmentFile">Assignment File (Optional):</label>
+            <input type="file" id="assignmentFile">
+            <small>Upload instructions or supplementary materials</small>
+        </div>
+        <div class="form-group">
+            <label for="assignmentDueDate">Due Date:</label>
+            <input type="date" id="assignmentDueDate" required>
+        </div>
+        <button type="submit">Create Assignment</button>
+        <button type="button" onclick="cancelAssignmentForm()">Cancel</button>
+    </form>
+</div>
+`;
+
+            // Add event listener to the form
+            const newAssignmentForm = document.getElementById('newAssignmentForm');
+            if (newAssignmentForm) {
+                newAssignmentForm.addEventListener('submit', createNewAssignment);
+            }
+        }
+
+        // Function to cancel assignment form
+        function cancelAssignmentForm() {
+            const assignmentFormContainer = document.getElementById('assignmentFormContainer');
+            if (assignmentFormContainer) {
+                assignmentFormContainer.innerHTML = '';
+            }
+        }
+
+        // Function to create a new assignment
+        function createNewAssignment(event) {
+            event.preventDefault();
+
+            const course = document.getElementById('assignmentCourse').value;
+            const title = document.getElementById('assignmentTitle').value;
+            const description = document.getElementById('assignmentDescription').value;
+            const dueDate = document.getElementById('assignmentDueDate').value;
+            const fileInput = document.getElementById('assignmentFile');
+
+            if (!course || !title || !description || !dueDate) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Get teacher's username
+            const teacherUsername = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+
+            // Process file upload if provided
+            let assignmentFileData = null;
+            let assignmentFileName = null;
+
+            if (fileInput && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                assignmentFileName = file.name;
+
+                // Read file as data URL
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const fileData = e.target.result;
+
+                    // Create assignment object with file data
+                    createAssignmentWithFile(course, title, description, dueDate, teacherUsername, assignmentFileName, fileData);
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                // Create assignment without file
+                createAssignmentWithFile(course, title, description, dueDate, teacherUsername, null, null);
+            }
+        }
+
+        // Helper function to create assignment (with or without file)
+        function createAssignmentWithFile(course, title, description, dueDate, teacherUsername, fileName, fileData) {
+            // Create assignment object
+            const assignment = {
+                id: Date.now().toString(),
+                course,
+                title,
+                description,
+                dueDate,
+                createdBy: teacherUsername,
+                createdOn: new Date().toISOString(),
+                submissions: [],
+                fileName: fileName,
+                fileData: fileData
+            };
+
+            // Store assignment in localStorage
+            const storageKey = 'assignments';
+            const assignments = JSON.parse(localStorage.getItem(storageKey)) || [];
+            assignments.push(assignment);
+            localStorage.setItem(storageKey, JSON.stringify(assignments));
+
+            // Clear the form
+            cancelAssignmentForm();
+
+            // Refresh the assignments list
+            loadExistingAssignments();
+
+            alert(`Assignment "${title}" for ${course} has been created successfully.`);
+        }
+
+        // Function to load existing assignments for teacher
+        function loadExistingAssignments() {
+            const assignmentsBody = document.getElementById('assignmentsBody');
+            const noAssignmentsMessage = document.getElementById('noAssignmentsMessage');
+
+            if (!assignmentsBody || !noAssignmentsMessage) return;
+
+            // Get all assignments
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+            if (assignments.length > 0) {
+                assignmentsBody.innerHTML = '';
+                noAssignmentsMessage.style.display = 'none';
+
+                assignments.forEach(assignment => {
+                    const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+                    const row = document.createElement('tr');
+
+                    // Check if due date is past
+                    const isDueDatePassed = new Date() > new Date(assignment.dueDate);
+
+                    // Count submissions
+                    const submissionCount = assignment.submissions ? assignment.submissions.length : 0;
+
+                    row.innerHTML = `
+        <td>${assignment.title} <span class="course-badge" style="display: inline-block; background: #e9f5ff; color: #0078d7; padding: 3px 8px; border-radius: 4px; font-size: 12px; margin-left: 5px;">${assignment.course}</span></td>
+        <td>${dueDate}</td>
+        <td>${submissionCount} submissions</td>
+        <td>
+            <button onclick="viewAssignmentDetails('${assignment.id}')">View Details</button>
+            <button onclick="viewSubmissions('${assignment.id}')">View Submissions</button>
+            ${assignment.fileName ? `<button onclick="downloadAssignmentFile('${assignment.id}')">Download File</button>` : ''}
+            ${isDueDatePassed ? `<button onclick="deleteAssignment('${assignment.id}')" class="delete-btn">Delete</button>` : ''}
+        </td>
+    `;
+
+                    assignmentsBody.appendChild(row);
+                });
+            } else {
+                assignmentsBody.innerHTML = '';
+                noAssignmentsMessage.style.display = 'block';
+            }
+        }
+
+        // Function to download assignment file (teacher uploaded)
+        function downloadAssignmentFile(assignmentId) {
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment || !assignment.fileData || !assignment.fileName) {
+                alert('Assignment file not found.');
+                return;
+            }
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = assignment.fileData;
+            link.download = assignment.fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Function to delete an assignment
+        function deleteAssignment(assignmentId) {
+            if (!confirm('Are you sure you want to delete this assignment? This action cannot be undone.')) {
+                return;
+            }
+
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const updatedAssignments = assignments.filter(a => a.id !== assignmentId);
+
+            localStorage.setItem('assignments', JSON.stringify(updatedAssignments));
+
+            // Refresh the assignments list
+            loadExistingAssignments();
+
+            alert('Assignment has been deleted successfully.');
+        }
+
+        // Function to view assignment details
+        function viewAssignmentDetails(assignmentId) {
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                alert('Assignment not found.');
+                return;
+            }
+
+            const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+            const hasFile = assignment.fileName ? `Yes (${assignment.fileName})` : 'No';
+
+            alert(`
+Assignment Details:
+
+Title: ${assignment.title}
+Course: ${assignment.course}
+Description: ${assignment.description}
+Due Date: ${dueDate}
+Has File: ${hasFile}
+Submissions: ${assignment.submissions ? assignment.submissions.length : 0}
+`);
+        }
+
+        // Function to view submissions for an assignment
+        function viewSubmissions(assignmentId) {
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                alert('Assignment not found.');
+                return;
+            }
+
+            const assignmentFormContainer = document.getElementById('assignmentFormContainer');
+            if (!assignmentFormContainer) return;
+
+            if (!assignment.submissions || assignment.submissions.length === 0) {
+                assignmentFormContainer.innerHTML = `
+    <div class="form-container">
+        <h3>Submissions for "${assignment.title}"</h3>
+        <p>No submissions yet.</p>
+        <button onclick="cancelAssignmentForm()">Back</button>
+    </div>
+`;
+                return;
+            }
+
+            let submissionsHTML = `
+<div class="form-container">
+    <h3>Submissions for "${assignment.title}"</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Submitted On</th>
+                <th>File</th>
+                <th>Grade</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+`;
+
+            assignment.submissions.forEach(submission => {
+                const submittedDate = new Date(submission.submittedOn).toLocaleDateString();
+                submissionsHTML += `
+    <tr>
+        <td>${submission.student}</td>
+        <td>${submittedDate}</td>
+        <td>${submission.fileName}</td>
+        <td>${submission.grade || 'Not graded'}</td>
+        <td>
+            <button onclick="gradeSubmission('${assignment.id}', '${submission.student}')">Grade</button>
+            ${submission.fileData ? `<button onclick="downloadStudentSubmission('${assignment.id}', '${submission.student}')">Download</button>` : ''}
+        </td>
+    </tr>
+`;
+            });
+
+            submissionsHTML += `
+        </tbody>
+    </table>
+    <button onclick="cancelAssignmentForm()" style="margin-top: 15px;">Back</button>
+</div>
+`;
+
+            assignmentFormContainer.innerHTML = submissionsHTML;
+        }
+
+        // Function to download student submission
+        function downloadStudentSubmission(assignmentId, student) {
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                alert('Assignment not found.');
+                return;
+            }
+
+            const submission = assignment.submissions.find(s => s.student === student);
+
+            if (!submission || !submission.fileData || !submission.fileName) {
+                alert('Submission file not found.');
+                return;
+            }
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = submission.fileData;
+            link.download = submission.fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Function to grade a submission
+        function gradeSubmission(assignmentId, student) {
+            const grade = prompt('Enter grade for this submission (e.g., A, B, C, or a number):');
+
+            if (grade === null) return; // User cancelled
+
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignmentIndex = assignments.findIndex(a => a.id === assignmentId);
+
+            if (assignmentIndex === -1) {
+                alert('Assignment not found.');
+                return;
+            }
+
+            const submissionIndex = assignments[assignmentIndex].submissions.findIndex(s => s.student === student);
+
+            if (submissionIndex === -1) {
+                alert('Submission not found.');
+                return;
+            }
+
+            // Update the grade
+            assignments[assignmentIndex].submissions[submissionIndex].grade = grade;
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+
+            // Refresh the view
+            viewSubmissions(assignmentId);
+
+            alert(`Submission graded successfully.`);
+        }
+
+        // Update the student dashboard to handle assignments
+        function updateStudentAssignmentsSection() {
+            const assignmentsSection = document.getElementById('assignments');
+            if (!assignmentsSection) return;
+
+            // Add course selection dropdown
+            const courseSelectHTML = `
+<div class="form-group">
+    <label for="studentCourseSelect">Select Course:</label>
+    <select id="studentCourseSelect" class="form-group mb-3">
+        <option value="">Select Course</option>
+        <option value="Web Development">Web Development</option>
+        <option value="Graphic Designing">Graphic Designing</option>
+        <option value="E-commerce">E-commerce</option>
+    </select>
+</div>
+<div id="courseAssignments"></div>
+`;
+
+            // Add this before the existing form
+            const existingForm = assignmentsSection.querySelector('#assignmentForm');
+            if (existingForm) {
+                existingForm.insertAdjacentHTML('beforebegin', courseSelectHTML);
+
+                // Add event listener to the course select dropdown
+                const studentCourseSelect = document.getElementById('studentCourseSelect');
+                if (studentCourseSelect) {
+                    studentCourseSelect.addEventListener('change', loadStudentAssignments);
+                }
+            }
+        }
+
+        // Function to load assignments for a student based on selected course
+        function loadStudentAssignments() {
+            const selectedCourse = document.getElementById('studentCourseSelect').value;
+            const courseAssignmentsDiv = document.getElementById('courseAssignments');
+
+            if (!selectedCourse || !courseAssignmentsDiv) return;
+
+            // Get all assignments
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+            // Filter assignments by selected course
+            const courseAssignments = assignments.filter(a => a.course === selectedCourse);
+
+            if (courseAssignments.length === 0) {
+                courseAssignmentsDiv.innerHTML = '<p>No assignments available for this course.</p>';
+                return;
+            }
+
+            let assignmentsHTML = `
+<h3>Assignments for ${selectedCourse}</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Grade</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+`;
+
+            const studentUsername = sessionStorage.getItem('currentUsername') || 'student@example.com';
+
+            courseAssignments.forEach(assignment => {
+                const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+
+                // Check if student has already submitted this assignment
+                const studentSubmission = assignment.submissions ?
+                    assignment.submissions.find(s => s.student === studentUsername) : null;
+
+                const status = studentSubmission ? 'Submitted' : 'Not Submitted';
+                const grade = studentSubmission && studentSubmission.grade ? studentSubmission.grade : 'Not graded';
+
+                assignmentsHTML += `
+    <tr>
+        <td>${assignment.title}</td>
+        <td>${dueDate}</td>
+        <td>${status}</td>
+        <td>${grade}</td>
+        <td>
+            <button onclick="viewAssignmentDetailsStudent('${assignment.id}')">View</button>
+            ${assignment.fileName ? `<button onclick="downloadAssignmentFile('${assignment.id}')">Download Instructions</button>` : ''}
+            ${!studentSubmission ?
+                        `<button onclick="showSubmitAssignmentForm('${assignment.id}')">Submit</button>` :
+                        ''}
+        </td>
+    </tr>
+`;
+            });
+
+            assignmentsHTML += `
+    </tbody>
+</table>
+`;
+
+            courseAssignmentsDiv.innerHTML = assignmentsHTML;
+        }
+
+        // Function to view assignment details for students
+        function viewAssignmentDetailsStudent(assignmentId) {
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                alert('Assignment not found.');
+                return;
+            }
+
+            const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+            const hasFile = assignment.fileName ? `Yes (${assignment.fileName})` : 'No';
+
+            alert(`
+Assignment Details:
+
+Title: ${assignment.title}
+Course: ${assignment.course}
+Description: ${assignment.description}
+Due Date: ${dueDate}
+Instructions File: ${hasFile}
+`);
+        }
+
+        // Function to show submit assignment form
+        function showSubmitAssignmentForm(assignmentId) {
+            const courseAssignmentsDiv = document.getElementById('courseAssignments');
+            if (!courseAssignmentsDiv) return;
+
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignment = assignments.find(a => a.id === assignmentId);
+
+            if (!assignment) {
+                alert('Assignment not found.');
+                return;
+            }
+
+            const submitFormHTML = `
+<div class="form-container">
+    <h3>Submit Assignment: ${assignment.title}</h3>
+    <form id="submitAssignmentForm">
+        <input type="hidden" id="submissionAssignmentId" value="${assignmentId}">
+        <div class="form-group">
+            <label for="submissionFile">Upload Your Assignment:</label>
+            <input type="file" id="submissionFile" required>
+        </div>
+        <div class="form-group">
+            <label for="submissionComments">Comments (Optional):</label>
+            <textarea id="submissionComments" placeholder="Any comments about your submission"></textarea>
+        </div>
+        <button type="submit">Submit Assignment</button>
+        <button type="button" onclick="loadStudentAssignments()">Cancel</button>
+    </form>
+</div>
+`;
+
+            courseAssignmentsDiv.innerHTML = submitFormHTML;
+
+            // Add event listener to the form
+            const submitAssignmentForm = document.getElementById('submitAssignmentForm');
+            if (submitAssignmentForm) {
+                submitAssignmentForm.addEventListener('submit', submitStudentAssignment);
+            }
+        }
+
+        // Function to submit student assignment
+        function submitStudentAssignment(event) {
+            event.preventDefault();
+
+            const assignmentId = document.getElementById('submissionAssignmentId').value;
+            const fileInput = document.getElementById('submissionFile');
+            const comments = document.getElementById('submissionComments').value;
+
+            if (!fileInput || !fileInput.files.length) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const fileName = file.name;
+            const studentUsername = sessionStorage.getItem('currentUsername') || 'student@example.com';
+
+            // Read file as data URL
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const fileData = e.target.result;
+
+                // Create submission object with file data
+                const submission = {
+                    student: studentUsername,
+                    fileName,
+                    comments,
+                    submittedOn: new Date().toISOString(),
+                    fileData: fileData
+                };
+
+                // Update the assignment in localStorage
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                const assignmentIndex = assignments.findIndex(a => a.id === assignmentId);
+
+                if (assignmentIndex === -1) {
+                    alert('Assignment not found.');
+                    return;
+                }
+
+                if (!assignments[assignmentIndex].submissions) {
+                    assignments[assignmentIndex].submissions = [];
+                }
+
+                assignments[assignmentIndex].submissions.push(submission);
+                localStorage.setItem('assignments', JSON.stringify(assignments));
+
+                // Reload the assignments list
+                loadStudentAssignments();
+
+                alert(`Assignment "${assignments[assignmentIndex].title}" submitted successfully.`);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Initialize the assignment functionality when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            // Update the student assignments section
+            updateStudentAssignmentsSection();
+
+            // Initialize teacher dashboard
+            const createAssignmentBtn = document.getElementById('createAssignment');
+            if (createAssignmentBtn) {
+                createAssignmentBtn.addEventListener('click', showAssignmentForm);
+            }
+
+            // Load existing assignments if we're on the teacher dashboard
+            if (document.getElementById('assignmentsBody')) {
+                loadExistingAssignments();
+            }
+        });
+        // teacher lecture upload
+        // Function to upload lecture
+        function uploadLecture(event) {
+            event.preventDefault();
+
+            const lectureCourse = document.getElementById('lectureCourse').value;
+            const lectureTitle = document.getElementById('lectureTitle').value;
+            const lectureDescription = document.getElementById('lectureDescription').value;
+            const lectureFile = document.getElementById('lectureFile');
+            const lectureUploadStatus = document.getElementById('lectureUploadStatus');
+
+            if (!lectureCourse || !lectureTitle || !lectureFile.files.length) {
+                alert('Please select a course, enter a title, and upload a file.');
+                return;
+            }
+
+            const file = lectureFile.files[0];
+            const fileName = file.name;
+
+            // Read file as data URL
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const fileData = e.target.result;
+
+                // Create lecture object
+                const lecture = {
+                    id: Date.now().toString(),
+                    title: lectureTitle,
+                    description: lectureDescription,
+                    course: lectureCourse,
+                    fileName: fileName,
+                    fileData: fileData,
+                    uploadedBy: sessionStorage.getItem('currentUsername') || 'teacher@example.com',
+                    uploadedOn: new Date().toISOString()
+                };
+
+                // Store lecture in localStorage
+                const storageKey = 'lectures';
+                const lectures = JSON.parse(localStorage.getItem(storageKey)) || [];
+                lectures.push(lecture);
+                localStorage.setItem(storageKey, JSON.stringify(lectures));
+
+                // Update status
+                if (lectureUploadStatus) {
+                    lectureUploadStatus.textContent = `Lecture "${lectureTitle}" for ${lectureCourse} uploaded successfully.`;
+                    setTimeout(() => {
+                        lectureUploadStatus.textContent = '';
+                    }, 3000);
+                }
+
+                // Reset form
+                document.getElementById('lectureUploadForm').reset();
+
+                // Refresh the lectures list
+                loadUploadedLectures();
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Function to load uploaded lectures for teacher
+        function loadUploadedLectures() {
+            const lectureList = document.getElementById('lectureList');
+            if (!lectureList) return;
+
+            const lectures = JSON.parse(localStorage.getItem('lectures')) || [];
+            const teacherUsername = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+
+            // Filter lectures uploaded by the current teacher
+            const teacherLectures = lectures.filter(lecture => lecture.uploadedBy === teacherUsername);
+
+            if (teacherLectures.length === 0) {
+                lectureList.innerHTML = '<li class="empty-message">No lectures uploaded yet.</li>';
+                return;
+            }
+
+            // Sort lectures by upload date (newest first)
+            teacherLectures.sort((a, b) => new Date(b.uploadedOn) - new Date(a.uploadedOn));
+
+            lectureList.innerHTML = '';
+            teacherLectures.forEach(lecture => {
+                const uploadDate = new Date(lecture.uploadedOn).toLocaleDateString();
+                const li = document.createElement('li');
+                li.style.padding = '10px';
+                li.style.margin = '10px 0';
+                li.style.backgroundColor = '#f9f9f9';
+                li.style.borderRadius = '5px';
+                li.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+                li.innerHTML = `
+    <strong>${lecture.title}</strong> 
+    <span class="course-badge" style="display: inline-block; background: #e9f5ff; color: #0078d7; padding: 3px 8px; border-radius: 4px; font-size: 12px; margin-left: 5px;">${lecture.course}</span>
+    <p>${lecture.description || 'No description provided.'}</p>
+    <p><small>File: ${lecture.fileName} (Uploaded on ${uploadDate})</small></p>
+    <button onclick="downloadLecture('${lecture.id}')">Download</button>
+    <button onclick="deleteLecture('${lecture.id}')">Delete</button>
+`;
+
+                lectureList.appendChild(li);
+            });
+        }
+
+        // Function to download lecture
+        function downloadLecture(lectureId) {
+            const lectures = JSON.parse(localStorage.getItem('lectures')) || [];
+            const lecture = lectures.find(l => l.id === lectureId);
+
+            if (!lecture || !lecture.fileData) {
+                alert('Lecture file not found.');
+                return;
+            }
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = lecture.fileData;
+            link.download = lecture.fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Function to delete lecture
+        function deleteLecture(lectureId) {
+            if (!confirm('Are you sure you want to delete this lecture?')) return;
+
+            const lectures = JSON.parse(localStorage.getItem('lectures')) || [];
+            const updatedLectures = lectures.filter(l => l.id !== lectureId);
+
+            localStorage.setItem('lectures', JSON.stringify(updatedLectures));
+
+            // Refresh the lectures list
+            loadUploadedLectures();
+
+            alert('Lecture deleted successfully.');
+        }
+        // student lecture
+        // Function to load lectures for student based on selected course
+        function loadStudentLectures() {
+            const selectedCourse = document.getElementById('studentLectureCourseSelect').value;
+            const lecturesContainer = document.getElementById('studentLecturesList');
+
+            if (!selectedCourse || !lecturesContainer) return;
+
+            // Get all lectures
+            const lectures = JSON.parse(localStorage.getItem('lectures')) || [];
+
+            // Filter lectures by selected course
+            const courseLectures = lectures.filter(l => l.course === selectedCourse);
+
+            if (courseLectures.length === 0) {
+                lecturesContainer.innerHTML = '<p class="empty-message">No lectures available for this course.</p>';
+                return;
+            }
+
+            // Sort lectures by upload date (newest first)
+            courseLectures.sort((a, b) => new Date(b.uploadedOn) - new Date(a.uploadedOn));
+
+            lecturesContainer.innerHTML = '';
+            courseLectures.forEach(lecture => {
+                const uploadDate = new Date(lecture.uploadedOn).toLocaleDateString();
+                const div = document.createElement('div');
+                div.className = 'lecture-item';
+                div.style.padding = '15px';
+                div.style.margin = '10px 0';
+                div.style.backgroundColor = '#f9f9f9';
+                div.style.borderRadius = '8px';
+                div.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+
+                div.innerHTML = `
+    <h3>${lecture.title}</h3>
+    <p>${lecture.description || 'No description provided.'}</p>
+    <p><small>File: ${lecture.fileName} (Uploaded on ${uploadDate})</small></p>
+    <button onclick="downloadStudentLecture('${lecture.id}')">Download Lecture</button>
+`;
+
+                lecturesContainer.appendChild(div);
+            });
+        }
+
+        // Function for student to download lecture
+        function downloadStudentLecture(lectureId) {
+            const lectures = JSON.parse(localStorage.getItem('lectures')) || [];
+            const lecture = lectures.find(l => l.id === lectureId);
+
+            if (!lecture || !lecture.fileData) {
+                alert('Lecture file not found.');
+                return;
+            }
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = lecture.fileData;
+            link.download = lecture.fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        // Initialize the lecture functionality when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            // Teacher lecture upload form
+            const lectureUploadForm = document.getElementById('lectureUploadForm');
+            if (lectureUploadForm) {
+                lectureUploadForm.addEventListener('submit', uploadLecture);
+            }
+
+            // Student lecture course selection
+            const studentLectureCourseSelect = document.getElementById('studentLectureCourseSelect');
+            if (studentLectureCourseSelect) {
+                studentLectureCourseSelect.addEventListener('change', loadStudentLectures);
+            }
+
+            // Load lectures when sections are shown
+            const currentUserType = sessionStorage.getItem('currentUserType'); // Fixed: removed space in key name
+            if (currentUserType === "ClassTeacher") {
+                // Load teacher's uploaded lectures when the section is shown
+                const teacherLecturesBtn = document.querySelector('.sidebar button[onclick="showSection(\'lectures\')"]');
+                if (teacherLecturesBtn) {
+                    teacherLecturesBtn.addEventListener('click', loadUploadedLectures);
+                }
+            } else if (currentUserType === "Student") {
+                // Add event listener for student uploaded lectures section
+                const uploadedLecturesBtn = document.querySelector('.sidebar button[onclick="showSection(\'uploadedLectures\')"]');
+                if (uploadedLecturesBtn) {
+                    uploadedLecturesBtn.addEventListener('click', function () {
+                        // Reset the course selection when the section is shown
+                        const studentLectureCourseSelect = document.getElementById('studentLectureCourseSelect');
+                        if (studentLectureCourseSelect) {
+                            studentLectureCourseSelect.value = '';
+                            document.getElementById('studentLecturesList').innerHTML = '<p>Please select a course to view lectures.</p>';
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+
+</script>
+
 </html>
