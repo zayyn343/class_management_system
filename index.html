@@ -751,6 +751,7 @@
                 } else if (userType === "ClassTeacher") {
                     // Show default section for teacher
                     showSection('attendance');
+                    initializeTeacherDashboard();
                 } else {
                 }
             } else {
@@ -1579,12 +1580,15 @@
                 noAttendanceData.textContent = `No attendance records found for ${selectedDateObj.toLocaleDateString()}.`;
             }
         }
-        // Function to show assignment form for teachers
-        function showAssignmentForm() {
-            const assignmentFormContainer = document.getElementById('assignmentFormContainer');
-            if (!assignmentFormContainer) return;
+  // Function to show assignment form for teachers
+function showAssignmentForm() {
+    const assignmentFormContainer = document.getElementById('assignmentFormContainer');
+    if (!assignmentFormContainer) {
+        console.error('Assignment form container not found');
+        return;
+    }
 
-            assignmentFormContainer.innerHTML = `
+    assignmentFormContainer.innerHTML = `
 <div class="form-container">
     <h3>Create New Assignment</h3>
     <form id="newAssignmentForm">
@@ -1620,188 +1624,217 @@
 </div>
 `;
 
-            // Add event listener to the form
-            const newAssignmentForm = document.getElementById('newAssignmentForm');
-            if (newAssignmentForm) {
-                newAssignmentForm.addEventListener('submit', createNewAssignment);
-            }
+    // Add event listener to the form
+    const newAssignmentForm = document.getElementById('newAssignmentForm');
+    if (newAssignmentForm) {
+        newAssignmentForm.addEventListener('submit', createNewAssignment);
+    }
+}
+
+// Function to cancel assignment form
+function cancelAssignmentForm() {
+    const assignmentFormContainer = document.getElementById('assignmentFormContainer');
+    if (assignmentFormContainer) {
+        assignmentFormContainer.innerHTML = '';
+    }
+}
+
+// Function to create a new assignment
+function createNewAssignment(event) {
+    event.preventDefault();
+
+    const course = document.getElementById('assignmentCourse').value;
+    const title = document.getElementById('assignmentTitle').value;
+    const description = document.getElementById('assignmentDescription').value;
+    const dueDate = document.getElementById('assignmentDueDate').value;
+    const fileInput = document.getElementById('assignmentFile');
+
+    if (!course || !title || !description || !dueDate) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+
+    // Get teacher's username
+    const teacherUsername = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
+
+    // Process file upload if provided
+    let assignmentFileData = null;
+    let assignmentFileName = null;
+
+    if (fileInput && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        assignmentFileName = file.name;
+
+        // Read file as data URL
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const fileData = e.target.result;
+
+            // Create assignment object with file data
+            createAssignmentWithFile(course, title, description, dueDate, teacherUsername, assignmentFileName, fileData);
+        };
+        
+        reader.onerror = function() {
+            console.error('Error reading file');
+            alert('Error uploading file. Please try again.');
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        // Create assignment without file
+        createAssignmentWithFile(course, title, description, dueDate, teacherUsername, null, null);
+    }
+}
+
+// Helper function to create assignment (with or without file)
+function createAssignmentWithFile(course, title, description, dueDate, teacherUsername, fileName, fileData) {
+    // Create assignment object
+    const assignment = {
+        id: Date.now().toString(),
+        course,
+        title,
+        description,
+        dueDate,
+        createdBy: teacherUsername,
+        createdOn: new Date().toISOString(),
+        submissions: [],
+        fileName: fileName,
+        fileData: fileData
+    };
+
+    try {
+        // Store assignment in localStorage
+        const storageKey = 'assignments';
+        const assignments = JSON.parse(localStorage.getItem(storageKey)) || [];
+        assignments.push(assignment);
+        localStorage.setItem(storageKey, JSON.stringify(assignments));
+
+        // Clear the form
+        cancelAssignmentForm();
+
+        // Refresh the assignments list
+        loadExistingAssignments();
+
+        alert(`Assignment "${title}" for ${course} has been created successfully.`);
+    } catch (error) {
+        console.error('Error saving assignment:', error);
+        alert('There was an error saving your assignment. Please try again.');
+    }
+}
+
+// Function to load existing assignments for teacher
+function loadExistingAssignments() {
+    const assignmentsBody = document.getElementById('assignmentsBody');
+    const noAssignmentsMessage = document.getElementById('noAssignmentsMessage');
+
+    if (!assignmentsBody || !noAssignmentsMessage) {
+        console.error('Assignment table elements not found');
+        return;
+    }
+
+    try {
+        // Get all assignments
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+        if (assignments.length > 0) {
+            assignmentsBody.innerHTML = '';
+            noAssignmentsMessage.style.display = 'none';
+
+            assignments.forEach(assignment => {
+                const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+                const row = document.createElement('tr');
+
+                // Check if due date is past
+                const isDueDatePassed = new Date() > new Date(assignment.dueDate);
+
+                // Count submissions
+                const submissionCount = assignment.submissions ? assignment.submissions.length : 0;
+
+                row.innerHTML = `
+<td>${assignment.title} <span class="course-badge" style="display: inline-block; background: #e9f5ff; color: #0078d7; padding: 3px 8px; border-radius: 4px; font-size: 12px; margin-left: 5px;">${assignment.course}</span></td>
+<td>${dueDate}</td>
+<td>${submissionCount} submissions</td>
+<td>
+    <button onclick="viewAssignmentDetails('${assignment.id}')">View Details</button>
+    <button onclick="viewSubmissions('${assignment.id}')">View Submissions</button>
+    ${assignment.fileName ? `<button onclick="downloadAssignmentFile('${assignment.id}')">Download File</button>` : ''}
+    ${isDueDatePassed ? `<button onclick="deleteAssignment('${assignment.id}')" class="delete-btn">Delete</button>` : ''}
+</td>
+`;
+
+                assignmentsBody.appendChild(row);
+            });
+        } else {
+            assignmentsBody.innerHTML = '';
+            noAssignmentsMessage.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error loading assignments:', error);
+        assignmentsBody.innerHTML = '<tr><td colspan="4">Error loading assignments. Please refresh the page.</td></tr>';
+    }
+}
+
+// Function to download assignment file (teacher uploaded)
+function downloadAssignmentFile(assignmentId) {
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const assignment = assignments.find(a => a.id === assignmentId);
+
+        if (!assignment || !assignment.fileData || !assignment.fileName) {
+            alert('Assignment file not found.');
+            return;
         }
 
-        // Function to cancel assignment form
-        function cancelAssignmentForm() {
-            const assignmentFormContainer = document.getElementById('assignmentFormContainer');
-            if (assignmentFormContainer) {
-                assignmentFormContainer.innerHTML = '';
-            }
+        // Create download link
+        const link = document.createElement('a');
+        link.href = assignment.fileData;
+        link.download = assignment.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        alert('Error downloading file. Please try again.');
+    }
+}
+
+// Function to delete an assignment
+function deleteAssignment(assignmentId) {
+    if (!confirm('Are you sure you want to delete this assignment? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const updatedAssignments = assignments.filter(a => a.id !== assignmentId);
+
+        localStorage.setItem('assignments', JSON.stringify(updatedAssignments));
+
+        // Refresh the assignments list
+        loadExistingAssignments();
+
+        alert('Assignment has been deleted successfully.');
+    } catch (error) {
+        console.error('Error deleting assignment:', error);
+        alert('Error deleting assignment. Please try again.');
+    }
+}
+
+// Function to view assignment details
+function viewAssignmentDetails(assignmentId) {
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const assignment = assignments.find(a => a.id === assignmentId);
+
+        if (!assignment) {
+            alert('Assignment not found.');
+            return;
         }
 
-        // Function to create a new assignment
-        function createNewAssignment(event) {
-            event.preventDefault();
+        const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+        const hasFile = assignment.fileName ? `Yes (${assignment.fileName})` : 'No';
 
-            const course = document.getElementById('assignmentCourse').value;
-            const title = document.getElementById('assignmentTitle').value;
-            const description = document.getElementById('assignmentDescription').value;
-            const dueDate = document.getElementById('assignmentDueDate').value;
-            const fileInput = document.getElementById('assignmentFile');
-
-            if (!course || !title || !description || !dueDate) {
-                alert('Please fill in all required fields.');
-                return;
-            }
-
-            // Get teacher's username
-            const teacherUsername = sessionStorage.getItem('currentUsername') || 'teacher@example.com';
-
-            // Process file upload if provided
-            let assignmentFileData = null;
-            let assignmentFileName = null;
-
-            if (fileInput && fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                assignmentFileName = file.name;
-
-                // Read file as data URL
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const fileData = e.target.result;
-
-                    // Create assignment object with file data
-                    createAssignmentWithFile(course, title, description, dueDate, teacherUsername, assignmentFileName, fileData);
-                };
-
-                reader.readAsDataURL(file);
-            } else {
-                // Create assignment without file
-                createAssignmentWithFile(course, title, description, dueDate, teacherUsername, null, null);
-            }
-        }
-
-        // Helper function to create assignment (with or without file)
-        function createAssignmentWithFile(course, title, description, dueDate, teacherUsername, fileName, fileData) {
-            // Create assignment object
-            const assignment = {
-                id: Date.now().toString(),
-                course,
-                title,
-                description,
-                dueDate,
-                createdBy: teacherUsername,
-                createdOn: new Date().toISOString(),
-                submissions: [],
-                fileName: fileName,
-                fileData: fileData
-            };
-
-            // Store assignment in localStorage
-            const storageKey = 'assignments';
-            const assignments = JSON.parse(localStorage.getItem(storageKey)) || [];
-            assignments.push(assignment);
-            localStorage.setItem(storageKey, JSON.stringify(assignments));
-
-            // Clear the form
-            cancelAssignmentForm();
-
-            // Refresh the assignments list
-            loadExistingAssignments();
-
-            alert(`Assignment "${title}" for ${course} has been created successfully.`);
-        }
-
-        // Function to load existing assignments for teacher
-        function loadExistingAssignments() {
-            const assignmentsBody = document.getElementById('assignmentsBody');
-            const noAssignmentsMessage = document.getElementById('noAssignmentsMessage');
-
-            if (!assignmentsBody || !noAssignmentsMessage) return;
-
-            // Get all assignments
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-
-            if (assignments.length > 0) {
-                assignmentsBody.innerHTML = '';
-                noAssignmentsMessage.style.display = 'none';
-
-                assignments.forEach(assignment => {
-                    const dueDate = new Date(assignment.dueDate).toLocaleDateString();
-                    const row = document.createElement('tr');
-
-                    // Check if due date is past
-                    const isDueDatePassed = new Date() > new Date(assignment.dueDate);
-
-                    // Count submissions
-                    const submissionCount = assignment.submissions ? assignment.submissions.length : 0;
-
-                    row.innerHTML = `
-        <td>${assignment.title} <span class="course-badge" style="display: inline-block; background: #e9f5ff; color: #0078d7; padding: 3px 8px; border-radius: 4px; font-size: 12px; margin-left: 5px;">${assignment.course}</span></td>
-        <td>${dueDate}</td>
-        <td>${submissionCount} submissions</td>
-        <td>
-            <button onclick="viewAssignmentDetails('${assignment.id}')">View Details</button>
-            <button onclick="viewSubmissions('${assignment.id}')">View Submissions</button>
-            ${assignment.fileName ? `<button onclick="downloadAssignmentFile('${assignment.id}')">Download File</button>` : ''}
-            ${isDueDatePassed ? `<button onclick="deleteAssignment('${assignment.id}')" class="delete-btn">Delete</button>` : ''}
-        </td>
-    `;
-
-                    assignmentsBody.appendChild(row);
-                });
-            } else {
-                assignmentsBody.innerHTML = '';
-                noAssignmentsMessage.style.display = 'block';
-            }
-        }
-
-        // Function to download assignment file (teacher uploaded)
-        function downloadAssignmentFile(assignmentId) {
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const assignment = assignments.find(a => a.id === assignmentId);
-
-            if (!assignment || !assignment.fileData || !assignment.fileName) {
-                alert('Assignment file not found.');
-                return;
-            }
-
-            // Create download link
-            const link = document.createElement('a');
-            link.href = assignment.fileData;
-            link.download = assignment.fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Function to delete an assignment
-        function deleteAssignment(assignmentId) {
-            if (!confirm('Are you sure you want to delete this assignment? This action cannot be undone.')) {
-                return;
-            }
-
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const updatedAssignments = assignments.filter(a => a.id !== assignmentId);
-
-            localStorage.setItem('assignments', JSON.stringify(updatedAssignments));
-
-            // Refresh the assignments list
-            loadExistingAssignments();
-
-            alert('Assignment has been deleted successfully.');
-        }
-
-        // Function to view assignment details
-        function viewAssignmentDetails(assignmentId) {
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const assignment = assignments.find(a => a.id === assignmentId);
-
-            if (!assignment) {
-                alert('Assignment not found.');
-                return;
-            }
-
-            const dueDate = new Date(assignment.dueDate).toLocaleDateString();
-            const hasFile = assignment.fileName ? `Yes (${assignment.fileName})` : 'No';
-
-            alert(`
+        alert(`
 Assignment Details:
 
 Title: ${assignment.title}
@@ -1811,33 +1844,41 @@ Due Date: ${dueDate}
 Has File: ${hasFile}
 Submissions: ${assignment.submissions ? assignment.submissions.length : 0}
 `);
+    } catch (error) {
+        console.error('Error viewing assignment details:', error);
+        alert('Error loading assignment details. Please try again.');
+    }
+}
+
+// Function to view submissions for an assignment
+function viewSubmissions(assignmentId) {
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const assignment = assignments.find(a => a.id === assignmentId);
+
+        if (!assignment) {
+            alert('Assignment not found.');
+            return;
         }
 
-        // Function to view submissions for an assignment
-        function viewSubmissions(assignmentId) {
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const assignment = assignments.find(a => a.id === assignmentId);
+        const assignmentFormContainer = document.getElementById('assignmentFormContainer');
+        if (!assignmentFormContainer) {
+            console.error('Assignment form container not found');
+            return;
+        }
 
-            if (!assignment) {
-                alert('Assignment not found.');
-                return;
-            }
-
-            const assignmentFormContainer = document.getElementById('assignmentFormContainer');
-            if (!assignmentFormContainer) return;
-
-            if (!assignment.submissions || assignment.submissions.length === 0) {
-                assignmentFormContainer.innerHTML = `
-    <div class="form-container">
-        <h3>Submissions for "${assignment.title}"</h3>
-        <p>No submissions yet.</p>
-        <button onclick="cancelAssignmentForm()">Back</button>
-    </div>
+        if (!assignment.submissions || assignment.submissions.length === 0) {
+            assignmentFormContainer.innerHTML = `
+<div class="form-container">
+    <h3>Submissions for "${assignment.title}"</h3>
+    <p>No submissions yet.</p>
+    <button onclick="cancelAssignmentForm()">Back</button>
+</div>
 `;
-                return;
-            }
+            return;
+        }
 
-            let submissionsHTML = `
+        let submissionsHTML = `
 <div class="form-container">
     <h3>Submissions for "${assignment.title}"</h3>
     <table>
@@ -1853,96 +1894,118 @@ Submissions: ${assignment.submissions ? assignment.submissions.length : 0}
         <tbody>
 `;
 
-            assignment.submissions.forEach(submission => {
-                const submittedDate = new Date(submission.submittedOn).toLocaleDateString();
-                submissionsHTML += `
-    <tr>
-        <td>${submission.student}</td>
-        <td>${submittedDate}</td>
-        <td>${submission.fileName}</td>
-        <td>${submission.grade || 'Not graded'}</td>
-        <td>
-            <button onclick="gradeSubmission('${assignment.id}', '${submission.student}')">Grade</button>
-            ${submission.fileData ? `<button onclick="downloadStudentSubmission('${assignment.id}', '${submission.student}')">Download</button>` : ''}
-        </td>
-    </tr>
-`;
-            });
-
+        assignment.submissions.forEach(submission => {
+            const submittedDate = new Date(submission.submittedOn).toLocaleDateString();
             submissionsHTML += `
+<tr>
+    <td>${submission.student}</td>
+    <td>${submittedDate}</td>
+    <td>${submission.fileName}</td>
+    <td>${submission.grade || 'Not graded'}</td>
+    <td>
+        <button onclick="gradeSubmission('${assignment.id}', '${submission.student}')">Grade</button>
+        ${submission.fileData ? `<button onclick="downloadStudentSubmission('${assignment.id}', '${submission.student}')">Download</button>` : ''}
+    </td>
+</tr>
+`;
+        });
+
+        submissionsHTML += `
         </tbody>
     </table>
     <button onclick="cancelAssignmentForm()" style="margin-top: 15px;">Back</button>
 </div>
 `;
 
-            assignmentFormContainer.innerHTML = submissionsHTML;
+        assignmentFormContainer.innerHTML = submissionsHTML;
+    } catch (error) {
+        console.error('Error viewing submissions:', error);
+        alert('Error loading submissions. Please try again.');
+    }
+}
+
+// Function to download student submission
+function downloadStudentSubmission(assignmentId, student) {
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const assignment = assignments.find(a => a.id === assignmentId);
+
+        if (!assignment) {
+            alert('Assignment not found.');
+            return;
         }
 
-        // Function to download student submission
-        function downloadStudentSubmission(assignmentId, student) {
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const assignment = assignments.find(a => a.id === assignmentId);
+        const submission = assignment.submissions.find(s => s.student === student);
 
-            if (!assignment) {
-                alert('Assignment not found.');
-                return;
-            }
-
-            const submission = assignment.submissions.find(s => s.student === student);
-
-            if (!submission || !submission.fileData || !submission.fileName) {
-                alert('Submission file not found.');
-                return;
-            }
-
-            // Create download link
-            const link = document.createElement('a');
-            link.href = submission.fileData;
-            link.download = submission.fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        if (!submission || !submission.fileData || !submission.fileName) {
+            alert('Submission file not found.');
+            return;
         }
 
-        // Function to grade a submission
-        function gradeSubmission(assignmentId, student) {
-            const grade = prompt('Enter grade for this submission (e.g., A, B, C, or a number):');
+        // Create download link
+        const link = document.createElement('a');
+        link.href = submission.fileData;
+        link.download = submission.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (error) {
+        console.error('Error downloading submission:', error);
+        alert('Error downloading submission. Please try again.');
+    }
+}
 
-            if (grade === null) return; // User cancelled
+// Function to grade a submission
+function gradeSubmission(assignmentId, student) {
+    const grade = prompt('Enter grade for this submission (e.g., A, B, C, or a number):');
 
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const assignmentIndex = assignments.findIndex(a => a.id === assignmentId);
+    if (grade === null) return; // User cancelled
 
-            if (assignmentIndex === -1) {
-                alert('Assignment not found.');
-                return;
-            }
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const assignmentIndex = assignments.findIndex(a => a.id === assignmentId);
 
-            const submissionIndex = assignments[assignmentIndex].submissions.findIndex(s => s.student === student);
-
-            if (submissionIndex === -1) {
-                alert('Submission not found.');
-                return;
-            }
-
-            // Update the grade
-            assignments[assignmentIndex].submissions[submissionIndex].grade = grade;
-            localStorage.setItem('assignments', JSON.stringify(assignments));
-
-            // Refresh the view
-            viewSubmissions(assignmentId);
-
-            alert(`Submission graded successfully.`);
+        if (assignmentIndex === -1) {
+            alert('Assignment not found.');
+            return;
         }
 
-        // Update the student dashboard to handle assignments
-        function updateStudentAssignmentsSection() {
-            const assignmentsSection = document.getElementById('assignments');
-            if (!assignmentsSection) return;
+        const submissionIndex = assignments[assignmentIndex].submissions.findIndex(s => s.student === student);
 
-            // Add course selection dropdown
-            const courseSelectHTML = `
+        if (submissionIndex === -1) {
+            alert('Submission not found.');
+            return;
+        }
+
+        // Update the grade
+        assignments[assignmentIndex].submissions[submissionIndex].grade = grade;
+        localStorage.setItem('assignments', JSON.stringify(assignments));
+
+        // Refresh the view
+        viewSubmissions(assignmentId);
+
+        alert(`Submission graded successfully.`);
+    } catch (error) {
+        console.error('Error grading submission:', error);
+        alert('Error saving grade. Please try again.');
+    }
+}
+
+// Function to update the student dashboard to handle assignments
+function updateStudentAssignmentsSection() {
+    const assignmentsSection = document.getElementById('assignments');
+    if (!assignmentsSection) {
+        console.error('Assignments section not found');
+        return;
+    }
+
+    // Check if course select already exists to avoid duplicates
+    if (document.getElementById('studentCourseSelect')) {
+        return; // Already initialized
+    }
+
+    // Add course selection dropdown
+    const courseSelectHTML = `
 <div class="form-group">
     <label for="studentCourseSelect">Select Course:</label>
     <select id="studentCourseSelect" class="form-group mb-3">
@@ -1955,38 +2018,39 @@ Submissions: ${assignment.submissions ? assignment.submissions.length : 0}
 <div id="courseAssignments"></div>
 `;
 
-            // Add this before the existing form
-            const existingForm = assignmentsSection.querySelector('#assignmentForm');
-            if (existingForm) {
-                existingForm.insertAdjacentHTML('beforebegin', courseSelectHTML);
+    // Insert the course select at the beginning of the assignments section
+    assignmentsSection.insertAdjacentHTML('afterbegin', courseSelectHTML);
 
-                // Add event listener to the course select dropdown
-                const studentCourseSelect = document.getElementById('studentCourseSelect');
-                if (studentCourseSelect) {
-                    studentCourseSelect.addEventListener('change', loadStudentAssignments);
-                }
-            }
+    // Add event listener to the course select dropdown
+    const studentCourseSelect = document.getElementById('studentCourseSelect');
+    if (studentCourseSelect) {
+        studentCourseSelect.addEventListener('change', loadStudentAssignments);
+    }
+}
+
+// Function to load assignments for a student based on selected course
+function loadStudentAssignments() {
+    const selectedCourse = document.getElementById('studentCourseSelect')?.value;
+    const courseAssignmentsDiv = document.getElementById('courseAssignments');
+
+    if (!selectedCourse || !courseAssignmentsDiv) {
+        console.error('Course select or assignments div not found');
+        return;
+    }
+
+    try {
+        // Get all assignments
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+        // Filter assignments by selected course
+        const courseAssignments = assignments.filter(a => a.course === selectedCourse);
+
+        if (courseAssignments.length === 0) {
+            courseAssignmentsDiv.innerHTML = '<p>No assignments available for this course.</p>';
+            return;
         }
 
-        // Function to load assignments for a student based on selected course
-        function loadStudentAssignments() {
-            const selectedCourse = document.getElementById('studentCourseSelect').value;
-            const courseAssignmentsDiv = document.getElementById('courseAssignments');
-
-            if (!selectedCourse || !courseAssignmentsDiv) return;
-
-            // Get all assignments
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-
-            // Filter assignments by selected course
-            const courseAssignments = assignments.filter(a => a.course === selectedCourse);
-
-            if (courseAssignments.length === 0) {
-                courseAssignmentsDiv.innerHTML = '<p>No assignments available for this course.</p>';
-                return;
-            }
-
-            let assignmentsHTML = `
+        let assignmentsHTML = `
 <h3>Assignments for ${selectedCourse}</h3>
 <table>
     <thead>
@@ -2001,57 +2065,62 @@ Submissions: ${assignment.submissions ? assignment.submissions.length : 0}
     <tbody>
 `;
 
-            const studentUsername = sessionStorage.getItem('currentUsername') || 'student@example.com';
+        const studentUsername = sessionStorage.getItem('currentUsername') || 'student@example.com';
 
-            courseAssignments.forEach(assignment => {
-                const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+        courseAssignments.forEach(assignment => {
+            const dueDate = new Date(assignment.dueDate).toLocaleDateString();
 
-                // Check if student has already submitted this assignment
-                const studentSubmission = assignment.submissions ?
-                    assignment.submissions.find(s => s.student === studentUsername) : null;
+            // Check if student has already submitted this assignment
+            const studentSubmission = assignment.submissions ?
+                assignment.submissions.find(s => s.student === studentUsername) : null;
 
-                const status = studentSubmission ? 'Submitted' : 'Not Submitted';
-                const grade = studentSubmission && studentSubmission.grade ? studentSubmission.grade : 'Not graded';
-
-                assignmentsHTML += `
-    <tr>
-        <td>${assignment.title}</td>
-        <td>${dueDate}</td>
-        <td>${status}</td>
-        <td>${grade}</td>
-        <td>
-            <button onclick="viewAssignmentDetailsStudent('${assignment.id}')">View</button>
-            ${assignment.fileName ? `<button onclick="downloadAssignmentFile('${assignment.id}')">Download Instructions</button>` : ''}
-            ${!studentSubmission ?
-                        `<button onclick="showSubmitAssignmentForm('${assignment.id}')">Submit</button>` :
-                        ''}
-        </td>
-    </tr>
-`;
-            });
+            const status = studentSubmission ? 'Submitted' : 'Not Submitted';
+            const grade = studentSubmission && studentSubmission.grade ? studentSubmission.grade : 'Not graded';
 
             assignmentsHTML += `
+<tr>
+    <td>${assignment.title}</td>
+    <td>${dueDate}</td>
+    <td>${status}</td>
+    <td>${grade}</td>
+    <td>
+        <button onclick="viewAssignmentDetailsStudent('${assignment.id}')">View</button>
+        ${assignment.fileName ? `<button onclick="downloadAssignmentFile('${assignment.id}')">Download Instructions</button>` : ''}
+        ${!studentSubmission ?
+            `<button onclick="showSubmitAssignmentForm('${assignment.id}')">Submit</button>` :
+            ''}
+    </td>
+</tr>
+`;
+        });
+
+        assignmentsHTML += `
     </tbody>
 </table>
 `;
 
-            courseAssignmentsDiv.innerHTML = assignmentsHTML;
+        courseAssignmentsDiv.innerHTML = assignmentsHTML;
+    } catch (error) {
+        console.error('Error loading student assignments:', error);
+        courseAssignmentsDiv.innerHTML = '<p>Error loading assignments. Please refresh the page.</p>';
+    }
+}
+
+// Function to view assignment details for students
+function viewAssignmentDetailsStudent(assignmentId) {
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const assignment = assignments.find(a => a.id === assignmentId);
+
+        if (!assignment) {
+            alert('Assignment not found.');
+            return;
         }
 
-        // Function to view assignment details for students
-        function viewAssignmentDetailsStudent(assignmentId) {
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const assignment = assignments.find(a => a.id === assignmentId);
+        const dueDate = new Date(assignment.dueDate).toLocaleDateString();
+        const hasFile = assignment.fileName ? `Yes (${assignment.fileName})` : 'No';
 
-            if (!assignment) {
-                alert('Assignment not found.');
-                return;
-            }
-
-            const dueDate = new Date(assignment.dueDate).toLocaleDateString();
-            const hasFile = assignment.fileName ? `Yes (${assignment.fileName})` : 'No';
-
-            alert(`
+        alert(`
 Assignment Details:
 
 Title: ${assignment.title}
@@ -2060,22 +2129,30 @@ Description: ${assignment.description}
 Due Date: ${dueDate}
 Instructions File: ${hasFile}
 `);
+    } catch (error) {
+        console.error('Error viewing assignment details:', error);
+        alert('Error loading assignment details. Please try again.');
+    }
+}
+
+// Function to show submit assignment form
+function showSubmitAssignmentForm(assignmentId) {
+    const courseAssignmentsDiv = document.getElementById('courseAssignments');
+    if (!courseAssignmentsDiv) {
+        console.error('Course assignments div not found');
+        return;
+    }
+
+    try {
+        const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        const assignment = assignments.find(a => a.id === assignmentId);
+
+        if (!assignment) {
+            alert('Assignment not found.');
+            return;
         }
 
-        // Function to show submit assignment form
-        function showSubmitAssignmentForm(assignmentId) {
-            const courseAssignmentsDiv = document.getElementById('courseAssignments');
-            if (!courseAssignmentsDiv) return;
-
-            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-            const assignment = assignments.find(a => a.id === assignmentId);
-
-            if (!assignment) {
-                alert('Assignment not found.');
-                return;
-            }
-
-            const submitFormHTML = `
+        const submitFormHTML = `
 <div class="form-container">
     <h3>Submit Assignment: ${assignment.title}</h3>
     <form id="submitAssignmentForm">
@@ -2094,87 +2171,108 @@ Instructions File: ${hasFile}
 </div>
 `;
 
-            courseAssignmentsDiv.innerHTML = submitFormHTML;
+        courseAssignmentsDiv.innerHTML = submitFormHTML;
 
-            // Add event listener to the form
-            const submitAssignmentForm = document.getElementById('submitAssignmentForm');
-            if (submitAssignmentForm) {
-                submitAssignmentForm.addEventListener('submit', submitStudentAssignment);
-            }
+        // Add event listener to the form
+        const submitAssignmentForm = document.getElementById('submitAssignmentForm');
+        if (submitAssignmentForm) {
+            submitAssignmentForm.addEventListener('submit', submitStudentAssignment);
         }
+    } catch (error) {
+        console.error('Error showing submission form:', error);
+        alert('Error loading submission form. Please try again.');
+    }
+}
 
-        // Function to submit student assignment
-        function submitStudentAssignment(event) {
-            event.preventDefault();
+// Function to submit student assignment
+function submitStudentAssignment(event) {
+    event.preventDefault();
 
-            const assignmentId = document.getElementById('submissionAssignmentId').value;
-            const fileInput = document.getElementById('submissionFile');
-            const comments = document.getElementById('submissionComments').value;
+    const assignmentId = document.getElementById('submissionAssignmentId').value;
+    const fileInput = document.getElementById('submissionFile');
+    const comments = document.getElementById('submissionComments').value;
 
-            if (!fileInput || !fileInput.files.length) {
-                alert('Please select a file to upload.');
+    if (!fileInput || !fileInput.files.length) {
+        alert('Please select a file to upload.');
+        return;
+    }
+
+    try {
+        const file = fileInput.files[0];
+        const fileName = file.name;
+        const studentUsername = sessionStorage.getItem('currentUsername') || 'student@example.com';
+
+        // Read file as data URL
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const fileData = e.target.result;
+
+            // Create submission object with file data
+            const submission = {
+                student: studentUsername,
+                fileName,
+                comments,
+                submittedOn: new Date().toISOString(),
+                fileData: fileData
+            };
+
+            // Update the assignment in localStorage
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignmentIndex = assignments.findIndex(a => a.id === assignmentId);
+
+            if (assignmentIndex === -1) {
+                alert('Assignment not found.');
                 return;
             }
 
-            const file = fileInput.files[0];
-            const fileName = file.name;
-            const studentUsername = sessionStorage.getItem('currentUsername') || 'student@example.com';
-
-            // Read file as data URL
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const fileData = e.target.result;
-
-                // Create submission object with file data
-                const submission = {
-                    student: studentUsername,
-                    fileName,
-                    comments,
-                    submittedOn: new Date().toISOString(),
-                    fileData: fileData
-                };
-
-                // Update the assignment in localStorage
-                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
-                const assignmentIndex = assignments.findIndex(a => a.id === assignmentId);
-
-                if (assignmentIndex === -1) {
-                    alert('Assignment not found.');
-                    return;
-                }
-
-                if (!assignments[assignmentIndex].submissions) {
-                    assignments[assignmentIndex].submissions = [];
-                }
-
-                assignments[assignmentIndex].submissions.push(submission);
-                localStorage.setItem('assignments', JSON.stringify(assignments));
-
-                // Reload the assignments list
-                loadStudentAssignments();
-
-                alert(`Assignment "${assignments[assignmentIndex].title}" submitted successfully.`);
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        // Initialize the assignment functionality when the page loads
-        document.addEventListener('DOMContentLoaded', function () {
-            // Update the student assignments section
-            updateStudentAssignmentsSection();
-
-            // Initialize teacher dashboard
-            const createAssignmentBtn = document.getElementById('createAssignment');
-            if (createAssignmentBtn) {
-                createAssignmentBtn.addEventListener('click', showAssignmentForm);
+            if (!assignments[assignmentIndex].submissions) {
+                assignments[assignmentIndex].submissions = [];
             }
 
+            assignments[assignmentIndex].submissions.push(submission);
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+
+            // Reload the assignments list
+            loadStudentAssignments();
+
+            alert(`Assignment "${assignments[assignmentIndex].title}" submitted successfully.`);
+        };
+
+        reader.onerror = function() {
+            console.error('Error reading file');
+            alert('Error uploading file. Please try again.');
+        };
+
+        reader.readAsDataURL(file);
+    } catch (error) {
+        console.error('Error submitting assignment:', error);
+        alert('Error submitting assignment. Please try again.');
+    }
+}
+
+// Initialize the assignment functionality when the page loads
+document.addEventListener('DOMContentLoaded', function () {
+    try {
+        // Check if we're on the student dashboard
+        if (document.getElementById('assignments')) {
+            // Update the student assignments section
+            updateStudentAssignmentsSection();
+        }
+
+        // Check if we're on the teacher dashboard
+        const createAssignmentBtn = document.getElementById('createAssignment');
+        if (createAssignmentBtn) {
+            createAssignmentBtn.addEventListener('click', showAssignmentForm);
+            
             // Load existing assignments if we're on the teacher dashboard
             if (document.getElementById('assignmentsBody')) {
                 loadExistingAssignments();
             }
-        });
+        }
+    } catch (error) {
+        console.error('Error initializing assignment functionality:', error);
+    }
+});
         // teacher lecture upload
         // Function to upload lecture
         function uploadLecture(event) {
